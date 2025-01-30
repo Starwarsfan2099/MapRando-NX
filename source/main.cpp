@@ -132,7 +132,7 @@ int main(int, char**)
     }
     TRACE("Done fonts");
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+    int width, height;
     padConfigureInput(1, HidNpadStyleSet_NpadStandard);
     PadState pad;
     padInitializeDefault(&pad);
@@ -155,14 +155,15 @@ int main(int, char**)
             mapRandoSettings.roomPalettes = 1;
             mapRandoSettings.tileTheme = 1;
         }
+        glfwGetFramebufferSize(window, &width, &height);
 
-        // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::SetNextWindowSize(ImVec2(WINDOW_WIDTH, WINDOW_HEIGHT));
+        ImGui::SetNextWindowSize(ImVec2(width, height));
         ImGui::SetNextWindowPos(ImVec2(0, 0));
-        ImGui::Begin("Map Rando Settings", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        ImGui::Begin("Map Rando Settings", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+
         // Skill Assumptions Section
         ImGui::Text("Skill Assumptions");
         if (ImGui::BeginCombo("##SkillLevel", skillLevelLabels[mapRandoSettings.skillLevel])) {
@@ -333,7 +334,7 @@ int main(int, char**)
         ImGui::InputText(" ##3", mapRandoSettings.spoilerToken, IM_ARRAYSIZE(mapRandoSettings.spoilerToken));
         
         // Generate Button
-        ImGui::SetCursorPosX(WINDOW_WIDTH - 250);
+        ImGui::SetCursorPosX(width - 250);
         ImGui::SetCursorPosY(40);
         if (ImGui::Button("Generate Rando", ImVec2(200, 50))) {
             showPopup = true;
@@ -343,7 +344,7 @@ int main(int, char**)
         }
 
         // Save settings button
-        ImGui::SetCursorPosX(WINDOW_WIDTH - 235);
+        ImGui::SetCursorPosX(width - 235);
         ImGui::SetCursorPosY(100);
         if (ImGui::Button("Save settings", ImVec2(170, 40))) {
             success = saveSettingsToFile(&mapRandoSettings, "/config/MapRando-NX/config.txt");
