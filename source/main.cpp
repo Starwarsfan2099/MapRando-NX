@@ -209,7 +209,7 @@ int main(int, char**)
         // Map Layout
         ImGui::Text("Map Layout");
         ImGui::RadioButton("Vanilla##1", &mapRandoSettings.mapLayout, 0); ImGui::SameLine();
-        ImGui::RadioButton("Tame", &mapRandoSettings.mapLayout, 1); ImGui::SameLine();
+        ImGui::RadioButton("Standard", &mapRandoSettings.mapLayout, 1); ImGui::SameLine();
         ImGui::RadioButton("Wild", &mapRandoSettings.mapLayout, 2);
 
         // Doors

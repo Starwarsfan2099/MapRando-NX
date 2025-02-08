@@ -18,7 +18,7 @@ struct Memory {
 // Data we need for sending settings
 const int version = 117;
 const char *objectives[] =  {"Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
-const char *mapLayout[] = {"Vanilla", "Tame", "Wild"};
+const char *mapLayout[] = {"Vanilla", "Standard", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
 const char *startLocation[] = {"Ship", "Random", "Escape"};
 const char *saveAnimals[] = {"No", "Yes", "Optional", "Random"};
