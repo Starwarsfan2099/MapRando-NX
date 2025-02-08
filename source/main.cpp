@@ -245,7 +245,7 @@ int main(int, char**)
 
         ImGui::Text("Area Assignment:"); ImGui::SameLine();
         ImGui::RadioButton("Ordered", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
-        ImGui::RadioButton("Standard", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
+        ImGui::RadioButton("Standard##2", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
         ImGui::RadioButton("Random##4", &mapRandoSettings.areaAssignment, 2);
 
         ImGui::Text("Item Dots After Collection:"); ImGui::SameLine();
