@@ -229,7 +229,7 @@ int main(int, char**)
         ImGui::RadioButton("No", &mapRandoSettings.saveAnimals, 0); ImGui::SameLine();
         ImGui::RadioButton("Yes", &mapRandoSettings.saveAnimals, 1); ImGui::SameLine();
         ImGui::RadioButton("Optional", &mapRandoSettings.saveAnimals, 2); ImGui::SameLine();
-        ImGui::RadioButton("Random", &mapRandoSettings.saveAnimals, 3);
+        ImGui::RadioButton("Random##3", &mapRandoSettings.saveAnimals, 3);
 
         // Other Options
         ImGui::Separator();
@@ -244,8 +244,9 @@ int main(int, char**)
         ImGui::RadioButton("Full", &mapRandoSettings.eTankMode, 2);
 
         ImGui::Text("Area Assignment:"); ImGui::SameLine();
-        ImGui::RadioButton("Standard", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
-        ImGui::RadioButton("Random", &mapRandoSettings.areaAssignment, 1);
+        ImGui::RadioButton("Ordered", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
+        ImGui::RadioButton("Standard", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
+        ImGui::RadioButton("Random##4", &mapRandoSettings.areaAssignment, 2);
 
         ImGui::Text("Item Dots After Collection:"); ImGui::SameLine();
         ImGui::RadioButton("Fade", &mapRandoSettings.dotsFade, 0); ImGui::SameLine();
