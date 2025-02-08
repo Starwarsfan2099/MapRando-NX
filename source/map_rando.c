@@ -16,12 +16,12 @@ struct Memory {
 };
 
 // Data we need for sending settings
-const int version = 116;
+const int version = 117;
 const char *objectives[] =  {"Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
 const char *mapLayout[] = {"Vanilla", "Tame", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
 const char *startLocation[] = {"Ship", "Random", "Escape"};
-const char *saveAnimals[] = {"No", "Maybe", "Yes"};
+const char *saveAnimals[] = {"No", "Yes", "Optional", "Random"};
 const char *wallJumpMode[] = {"Vanilla", "Collectible"};
 const char *eTankMode[] = {"Disabled", "Vanilla", "Full"};
 const char *areaAssignment[] = {"Standard", "Random"};
@@ -36,7 +36,7 @@ const char *music[] = {"area", "disabled"};
 const char *screenShaking[] = {"Vanilla", "Reduced", "Disabled"};
 const char *screenFlashing[] = {"Vanilla", "Reduced"};
 const char *lowEnergyBeeping[] = {"false", "true"};
-const char *suits[] = {"samus_vanilla","samus_dread","samus_fusion_typea_green","dark_samus","samus_zero-mission","samus_returns","samus_maid","hack_opposition","ped_suit","ascent","ancient_chozo","super_duper","samus_clocktoberfest","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","samus_blue","samus_greyscale","alcoon","alucard_sotn","arcana","bailey","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","captain_novolin","ceroba_ketsukane","chairdeep","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","fedtrooper","fight","goku_child","inkling-girl","junko","kiara","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","moonclif","onefourty","plissken","protogen_laso","pyronett","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","sprite_can","super_controid_pg","tails","tetris","wario","yoshi","samus_outline","hitboxhelper2","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible"};
+const char *suits[] = {"samus_vanilla","samus_dread","dread_samus","santamus","metroid_1_suit","samus_fusion_typea_green","dark_samus","samus_zero-mission","samus_returns","samus_maid","hack_opposition","ped_suit","ascent","ancient_chozo","super_duper","samus_clocktoberfest","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","samus_blue","samus_greyscale","alcoon","alucard_sotn","arcana","bailey","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","captain_novolin","ceroba_ketsukane","chairdeep","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","fedtrooper","fight","goku_child","inkling-girl","junko","kiara","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","sprite_can","super_controid_pg","tails","tetris","wario","yoshi","samus_outline","hitboxhelper2","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible"};
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area-themed"};
 const char *tileTheme[] = {"none", "area_themed", "scrambled", "OuterCrateria", "InnerCrateria", "GreenBrinstar", "PinkBrinstar", "RedBrinstar", "UpperNorfair", "LowerNorfair", "WreckedShip", "WestMaridia", "YellowMaridia", "MechaTourian", "MetroidHabitat", "Outline"};

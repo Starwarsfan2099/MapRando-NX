@@ -227,8 +227,9 @@ int main(int, char**)
         // Save the Animals
         ImGui::Text("Save the Animals");
         ImGui::RadioButton("No", &mapRandoSettings.saveAnimals, 0); ImGui::SameLine();
-        ImGui::RadioButton("Maybe", &mapRandoSettings.saveAnimals, 1); ImGui::SameLine();
-        ImGui::RadioButton("Yes", &mapRandoSettings.saveAnimals, 2);
+        ImGui::RadioButton("Yes", &mapRandoSettings.saveAnimals, 1); ImGui::SameLine();
+        ImGui::RadioButton("Optional", &mapRandoSettings.saveAnimals, 2); ImGui::SameLine();
+        ImGui::RadioButton("Random", &mapRandoSettings.saveAnimals, 3);
 
         // Other Options
         ImGui::Separator();
