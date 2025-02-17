@@ -53,10 +53,30 @@ bool loadingInProgress = false;
 bool loadingDone = false;
 int loadingFrames = 0;
 int success = 0;
+bool internetConnection = true;
 
 int main(int, char**)
 {
     socketInitializeDefault();
+
+    nifmInitialize(NifmServiceType_User);
+
+    NifmInternetConnectionType connectionType;
+    u32 wifiStrength;
+    NifmInternetConnectionStatus connectionStatus;
+
+    Result res = nifmGetInternetConnectionStatus(&connectionType, &wifiStrength, &connectionStatus);
+    if (R_SUCCEEDED(res)) {
+        if (connectionStatus == NifmInternetConnectionStatus_Connected) {
+            TRACE("Internet is available!\n");
+        } else {
+            TRACE("Internet is NOT available.\n");
+            internetConnection = false;
+        }
+    } else {
+        TRACE("Failed to get internet connection status: 0x%08X\n", res);
+        internetConnection = false;
+    }
 
     #ifdef DEBUG
         initNxLink();
@@ -395,11 +415,15 @@ int main(int, char**)
             if (ImGui::BeginPopupModal("Generating Map Rando", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                 ImGui::SetWindowFontScale(1.5f);
                 if (loadingInProgress) {
-                    ImGui::Text("Generating...");
-                    loadingFrames++;
-                    if (loadingFrames > 3) {
-                        loadingInProgress = false;
-                        loadingDone = true;
+                    if (internetConnection) {
+                        ImGui::Text("Generating...");
+                        loadingFrames++;
+                        if (loadingFrames > 3) {
+                            loadingInProgress = false;
+                            loadingDone = true;
+                        }
+                    } else {
+                        ImGui::Text("No internet connection.");
                     }
                 } else if (loadingDone) {
                     success = generate_map_rando(mapRandoSettings);
