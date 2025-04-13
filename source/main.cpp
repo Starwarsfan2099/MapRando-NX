@@ -162,19 +162,6 @@ int main(int, char**)
         glfwPollEvents();
 
         // Handle a few settings that change based onn other settings
-        if ((mapRandoSettings.tileTheme != 1) && (mapRandoSettings.tileTheme != 0)) {
-            mapRandoSettings.roomTheming = 3;
-        }
-
-        if (mapRandoSettings.roomTheming == 0){
-            mapRandoSettings.roomPalettes = 0;
-        } else if (mapRandoSettings.roomTheming == 1) {
-            mapRandoSettings.roomPalettes = 1;
-            mapRandoSettings.tileTheme = 0;
-        } else if (mapRandoSettings.roomTheming == 2) {
-            mapRandoSettings.roomPalettes = 1;
-            mapRandoSettings.tileTheme = 1;
-        }
         glfwGetFramebufferSize(window, &width, &height);
 
         ImGui_ImplOpenGL3_NewFrame();
