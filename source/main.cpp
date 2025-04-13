@@ -161,7 +161,6 @@ int main(int, char**)
     {
         glfwPollEvents();
 
-        // Handle a few settings that change based onn other settings
         glfwGetFramebufferSize(window, &width, &height);
 
         ImGui_ImplOpenGL3_NewFrame();
