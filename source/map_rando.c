@@ -169,9 +169,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "samus_sprite", CURLFORM_COPYCONTENTS, suits[mapRandoSettings.suit], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "etank_color", CURLFORM_COPYCONTENTS, "96de38", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "energy_tank_color", CURLFORM_COPYCONTENTS, "", CURLFORM_END);
-    if (mapRandoSettings.roomTheming != 3) {
-        curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_theming", CURLFORM_COPYCONTENTS, roomTheming[mapRandoSettings.roomTheming], CURLFORM_END);
-    }
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_theming", CURLFORM_COPYCONTENTS, roomTheming[mapRandoSettings.roomTheming], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "door_theme", CURLFORM_COPYCONTENTS, doorColors[mapRandoSettings.doorColors], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "music", CURLFORM_COPYCONTENTS, music[mapRandoSettings.music], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "shaking", CURLFORM_COPYCONTENTS, screenShaking[mapRandoSettings.screenShaking], CURLFORM_END);
