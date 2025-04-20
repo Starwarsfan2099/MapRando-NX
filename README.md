@@ -10,3 +10,7 @@ You'll need the MapRando-NX zip and an unmodified Super Metroid JU Rom (MD5: `21
 ### Thanks
 
 Thanks to MstrVLT for the initial ImGui port to Switch. And thanks to the entire Map Rando team!
+
+### Libraries 
+
+`switch-curl switch-libjson-c switch-glad switch-glm switch-glfw`
