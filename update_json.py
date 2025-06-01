@@ -24,7 +24,7 @@ if response.status_code == 200:
 
         json = json[:-2]
         json = json.replace("\"", "\\\"")
-        json = json.replace(",{\\\"preset\\\"", "\",\"{\\\"preset\\\"")
+        json = json.replace(",{\\\"preset\\\"", "\",\n\"{\\\"preset\\\"")
         json = "const char *" + array + "[] = {\n\"" + json
         parsedArrays[array] = json
 
