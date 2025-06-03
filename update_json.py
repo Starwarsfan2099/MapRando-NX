@@ -51,9 +51,35 @@ if response.status_code == 200:
 
     print("Modifying map_rando.c...")
     with open(maprandoFileName,'r') as inputFile:
-        source = inputFile.readlines()
-        source[39] = "const char *suits[] = {" + sprites[:-1] + "};\n"
+        origFile = inputFile.readlines()
+        origFile[39] = "const char *suits[] = {" + sprites[:-1] + "};\n"
 
         with open(maprandoFileName,'w') as outputFile:
-            outputFile.writelines(source)
+            outputFile.writelines(origFile)
+
+    print("Getting tile themes...")
+    tilesSource = ""
+    tiles = ""
+    j = 0
+    i = 0
+    for line in source:
+        if "id=\"tileTheme\" name=\"tile_theme\" class=\"form-select\"" in line:
+            j = i
+            break
+        i += 1
+    while (j < i + 10):
+        tilesSource = tilesSource + source[j]
+        j+=1
+    for term in tilesSource.split(" "):
+        if "value=" in term:
+            tiles = tiles + term.split(">")[0].replace("value=", "") + ","
+    
+    print("Modifying map_rando.c again...")
+    with open(maprandoFileName,'r') as inputFile:
+        origFile = inputFile.readlines()
+        origFile[42] = "const char *tileTheme[] = {" + tiles[:-1] + "};\n"
+
+        with open(maprandoFileName,'w') as outputFile:
+            outputFile.writelines(origFile)
+
 print("Done")
