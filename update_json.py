@@ -1,10 +1,12 @@
 import requests
+from pathlib import Path
 
 generateURL = "https://dev.maprando.com/generate"
 seedURL = "https://dev.maprando.com/seed/JfWx9J7Kt/"
 jsonArrays = ["skillPresetsArr", "itemPresetsArr", "qolPresetsArr"]
 parsedArrays = {}
-fileName = "source\settings.c"
+settingsFileName = Path("source/settings.c")
+maprandoFileName = Path("source/map_rando.c")
 sprites = ""
 otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":\"Standard\",\"item_dot_change\":\"Fade\",\"transition_letters\":true,\"door_locks_size\":\"Large\",\"maps_revealed\":\"No\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"race_mode\":false,\"random_seed\":null},\"debug\":false}"
 
@@ -28,7 +30,7 @@ if response.status_code == 200:
         json = "const char *" + array + "[] = {\n\"" + json
         parsedArrays[array] = json
 
-    outputFile = open(fileName, "w")
+    outputFile = open(settingsFileName, "w")
     outputFile.write("#include \"settings.h\"\n\n// Settings Json for generating the randos\n\n")
     for array in parsedArrays:
         outputFile.write(parsedArrays[array] + "\"};" + "\n\n")
@@ -48,10 +50,10 @@ if response.status_code == 200:
                     sprites = sprites + term.replace("data-name=", "") + ","
 
     print("Modifying map_rando.c...")
-    with open("source\map_rando.c",'r') as inputFile:
+    with open(maprandoFileName,'r') as inputFile:
         source = inputFile.readlines()
         source[39] = "const char *suits[] = {" + sprites[:-1] + "};\n"
 
-        with open("source\map_rando.c",'w') as outputFile:
+        with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(source)
 print("Done")
