@@ -16,8 +16,9 @@ struct Memory {
 };
 
 // Data we need for sending settings
-const int version = 117;
-const char *objectives[] =  {"Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
+const int version = 118;
+const char *baseUrl = "https://maprando.com";
+const char *objectives[] =  {"None", "Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
 const char *mapLayout[] = {"Vanilla", "Standard", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
 const char *startLocation[] = {"Ship", "Random", "Escape"};
@@ -36,10 +37,10 @@ const char *music[] = {"area", "disabled"};
 const char *screenShaking[] = {"Vanilla", "Reduced", "Disabled"};
 const char *screenFlashing[] = {"Vanilla", "Reduced"};
 const char *lowEnergyBeeping[] = {"false", "true"};
-const char *suits[] = {"samus_vanilla","samus_dread","dread_samus","santamus","metroid_1_suit","samus_fusion_typea_green","dark_samus","samus_zero-mission","samus_returns","samus_maid","hack_opposition","ped_suit","ascent","ancient_chozo","super_duper","samus_clocktoberfest","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","samus_blue","samus_greyscale","alcoon","alucard_sotn","arcana","bailey","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","captain_novolin","ceroba_ketsukane","chairdeep","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","fedtrooper","fight","goku_child","inkling-girl","junko","kiara","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","sprite_can","super_controid_pg","tails","tetris","wario","yoshi","samus_outline","hitboxhelper2","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible"};
+const char *suits[] = {"samus_vanilla","samus_dread","dread_samus","santamus","metroid_1_suit","samus_fusion_typea_green","dark_samus","dark_samus_2","dark_samus_reanimated","samus_zero-mission","samus_returns","samus_maid","hack_opposition","ped_suit","ascent","ancient_chozo","super_duper","samus_clocktoberfest","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","samus_blue","samus_greyscale","alcoon","alucard_sotn","arcana","bailey","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","cacodemon","captain_novolin","ceroba_ketsukane","chairdeep","charizard","charlotte_aran","crest","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","fedtrooper","fight","goku_child","infee_nitee","inkling-girl","junko","katt_aran","kiara","kiara_idol","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","modul","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","pyronett_a","richter_belmont","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","space_pirate","sprite_can","super_controid_pg","tails","tetris","thomcrow_corbin","wario","yoshi","zero_suit_samus","samus_outline","hitboxhelper2","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible"};
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area-themed"};
-const char *tileTheme[] = {"none", "area_themed", "scrambled", "OuterCrateria", "InnerCrateria", "GreenBrinstar", "PinkBrinstar", "RedBrinstar", "UpperNorfair", "LowerNorfair", "WreckedShip", "WestMaridia", "YellowMaridia", "MechaTourian", "MetroidHabitat", "Outline"};
+const char *tileTheme[] = {"none","area_themed","scrambled","OuterCrateria","InnerCrateria","BlueBrinstar","GreenBrinstar","PinkBrinstar","RedBrinstar","UpperNorfair","LowerNorfair","WreckedShip","WestMaridia","YellowMaridia","MechaTourian","MetroidHabitat","Outline","Invisible"};
 const int tile_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
 char outputPath[512];
 const char *userAgent = "Switch Homebrew - MapRando-NX";
@@ -101,7 +102,9 @@ char *send_request_1(const char *file_path, const char *spoiler_token, const cha
                     CURLFORM_END);
 
     // Set options
-    curl_easy_setopt(curl, CURLOPT_URL, "https://maprando.com/randomize");
+    char customize_url[512];
+    snprintf(customize_url, sizeof(customize_url), "%s/randomize", baseUrl);
+    curl_easy_setopt(curl, CURLOPT_URL, customize_url);
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
@@ -166,9 +169,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "samus_sprite", CURLFORM_COPYCONTENTS, suits[mapRandoSettings.suit], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "etank_color", CURLFORM_COPYCONTENTS, "96de38", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "energy_tank_color", CURLFORM_COPYCONTENTS, "", CURLFORM_END);
-    if (mapRandoSettings.roomTheming != 3) {
-        curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_theming", CURLFORM_COPYCONTENTS, roomTheming[mapRandoSettings.roomTheming], CURLFORM_END);
-    }
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_theming", CURLFORM_COPYCONTENTS, roomTheming[mapRandoSettings.roomTheming], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "door_theme", CURLFORM_COPYCONTENTS, doorColors[mapRandoSettings.doorColors], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "music", CURLFORM_COPYCONTENTS, music[mapRandoSettings.music], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "shaking", CURLFORM_COPYCONTENTS, screenShaking[mapRandoSettings.screenShaking], CURLFORM_END);
@@ -332,7 +333,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
 
     // Construct the customization URL
     char customize_url[512];
-    snprintf(customize_url, sizeof(customize_url), "https://maprando.com%scustomize", seedUrl);
+    snprintf(customize_url, sizeof(customize_url), "%s%scustomize", baseUrl, seedUrl);
     TRACE("%s", customize_url);
 
     char *seedPart = strstr(seedUrl, "/seed/");

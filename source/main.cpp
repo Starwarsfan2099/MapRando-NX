@@ -175,6 +175,7 @@ int main(int, char**)
             mapRandoSettings.roomPalettes = 1;
             mapRandoSettings.tileTheme = 1;
         }
+
         glfwGetFramebufferSize(window, &width, &height);
 
         ImGui_ImplOpenGL3_NewFrame();
@@ -219,12 +220,13 @@ int main(int, char**)
 
         // Objectives Section
         ImGui::Text("Objectives");
-        ImGui::RadioButton("Bosses", &mapRandoSettings.objectives, 0); ImGui::SameLine();
-        ImGui::RadioButton("Minibosses", &mapRandoSettings.objectives, 1); ImGui::SameLine();
-        ImGui::RadioButton("Metroids", &mapRandoSettings.objectives, 2); ImGui::SameLine();
-        ImGui::RadioButton("Chozos", &mapRandoSettings.objectives, 3); ImGui::SameLine();
-        ImGui::RadioButton("Pirates", &mapRandoSettings.objectives, 4); ImGui::SameLine();
-        ImGui::RadioButton("Random##1", &mapRandoSettings.objectives, 5);
+        ImGui::RadioButton("None", &mapRandoSettings.objectives, 0); ImGui::SameLine();
+        ImGui::RadioButton("Bosses", &mapRandoSettings.objectives, 1); ImGui::SameLine();
+        ImGui::RadioButton("Minibosses", &mapRandoSettings.objectives, 2); ImGui::SameLine();
+        ImGui::RadioButton("Metroids", &mapRandoSettings.objectives, 3); ImGui::SameLine();
+        ImGui::RadioButton("Chozos", &mapRandoSettings.objectives, 4); ImGui::SameLine();
+        ImGui::RadioButton("Pirates", &mapRandoSettings.objectives, 5); ImGui::SameLine();
+        ImGui::RadioButton("Random##1", &mapRandoSettings.objectives, 6);
 
         // Map Layout
         ImGui::Text("Map Layout");
