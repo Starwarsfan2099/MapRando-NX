@@ -16,8 +16,8 @@ struct Memory {
 };
 
 // Data we need for sending settings
-const int version = 118;
-const char *baseUrl = "https://maprando.com";
+const int version = 119;
+const char *baseUrl = "https://dev.maprando.com";
 const char *objectives[] =  {"None", "Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
 const char *mapLayout[] = {"Vanilla", "Standard", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
@@ -133,6 +133,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     CURLcode res;
     FILE *output_file;
     long response_code;
+    const char* roomNames = mapRandoSettings.roomNames ? "true" : "false";
 
     output_file = fopen(output_path, "wb");
     if (!output_file) {
@@ -195,6 +196,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_r", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_up", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "moonwalk", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_names", CURLFORM_COPYCONTENTS, roomNames, CURLFORM_END);
 
     // Set CURL options
     curl_easy_setopt(curl, CURLOPT_URL, seedUrl);
@@ -304,7 +306,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     json_object_object_add(other_settings, "map_station_reveal", mapStationObject);
     json_object_object_add(other_settings, "energy_free_shinesparks", json_object_new_boolean(mapRandoSettings.freeShinespark));
     json_object_object_add(other_settings, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
-    json_object_object_add(other_settings, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
+    json_object_object_add(other_settings, "    ", json_object_new_boolean(mapRandoSettings.raceMode));
 
     // Build the json settings object
     struct json_object *main_obj = json_object_new_object();
