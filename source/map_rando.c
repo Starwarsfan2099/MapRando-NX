@@ -306,7 +306,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     json_object_object_add(other_settings, "map_station_reveal", mapStationObject);
     json_object_object_add(other_settings, "energy_free_shinesparks", json_object_new_boolean(mapRandoSettings.freeShinespark));
     json_object_object_add(other_settings, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
-    json_object_object_add(other_settings, "    ", json_object_new_boolean(mapRandoSettings.raceMode));
+    json_object_object_add(other_settings, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
 
     // Build the json settings object
     struct json_object *main_obj = json_object_new_object();
