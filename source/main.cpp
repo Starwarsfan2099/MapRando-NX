@@ -161,7 +161,7 @@ int main(int, char**)
     {
         glfwPollEvents();
 
-        // Handle a few settings that change based onn other settings
+        // Handle a few settings that change based on other settings
         if ((mapRandoSettings.tileTheme != 1) && (mapRandoSettings.tileTheme != 0)) {
             mapRandoSettings.roomTheming = 3;
         }
