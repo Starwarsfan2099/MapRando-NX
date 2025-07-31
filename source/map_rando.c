@@ -31,7 +31,7 @@ const char *mapArrows[] = {"Arrows", "Letters"};
 const char *doorLock[] = {"Small", "Large"};
 const char *mapRevealed[] = {"No", "Partial", "Full"};
 const char *mapStation[] = {"Partial", "Full"};
-const char *roomTheming[] = {"Vanilla", "Area Palettes", "Area Tiling", "None"};
+const char *roomTheming[] = {"vanilla", "palettes", "tiling", ""};
 const char *doorColors[] = {"vanilla", "alternate"};
 const char *music[] = {"area", "disabled"};
 const char *screenShaking[] = {"Vanilla", "Reduced", "Disabled"};
@@ -134,6 +134,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     FILE *output_file;
     long response_code;
     const char* roomNames = mapRandoSettings.roomNames ? "true" : "false";
+    const char* transitionLetters = strcmp(mapArrows[mapRandoSettings.mapArrows], "Letters") == 0 ? "true" : "false";
 
     output_file = fopen(output_path, "wb");
     if (!output_file) {
@@ -197,6 +198,8 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_up", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "moonwalk", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_names", CURLFORM_COPYCONTENTS, roomNames, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "transition_letters", CURLFORM_COPYCONTENTS, transitionLetters, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "item_dot_change", CURLFORM_COPYCONTENTS, dotsFade[mapRandoSettings.dotsFade], CURLFORM_END);
 
     // Set CURL options
     curl_easy_setopt(curl, CURLOPT_URL, seedUrl);
@@ -296,8 +299,6 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     json_object_object_add(other_settings, "etank_refill", eTankObject);
     struct json_object *areaAssignmentObject = json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]);
     json_object_object_add(other_settings, "area_assignment", areaAssignmentObject);
-    struct json_object *dotsFadeObject = json_object_new_string(dotsFade[mapRandoSettings.dotsFade]);
-    json_object_object_add(other_settings, "item_dot_change", dotsFadeObject);
     struct json_object *doorLockObject = json_object_new_string(doorLock[mapRandoSettings.doorLock]);
     json_object_object_add(other_settings, "door_locks_size", doorLockObject);
     struct json_object *mapRevealedObject = json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]);
