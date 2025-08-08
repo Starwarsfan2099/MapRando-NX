@@ -19,7 +19,7 @@ struct Memory {
 const int version = 119;
 const char *baseUrl = "https://dev.maprando.com";
 const char *objectives[] =  {"None", "Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
-const char *mapLayout[] = {"Vanilla", "Standard", "Wild"};
+const char *mapLayout[] = {"Vanilla", "Small", "Standard", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
 const char *startLocation[] = {"Ship", "Random", "Escape"};
 const char *saveAnimals[] = {"No", "Yes", "Optional", "Random"};
