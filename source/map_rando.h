@@ -53,6 +53,7 @@ struct mapRando {
     int suit;
     int roomPalettes;
     int tileTheme;
+    bool roomNames;
     char inputRomPath[256];
     char outputRomPath[256];
     char spoilerToken[256];

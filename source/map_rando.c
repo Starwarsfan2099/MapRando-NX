@@ -16,10 +16,10 @@ struct Memory {
 };
 
 // Data we need for sending settings
-const int version = 118;
+const int version = 119;
 const char *baseUrl = "https://maprando.com";
 const char *objectives[] =  {"None", "Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
-const char *mapLayout[] = {"Vanilla", "Standard", "Wild"};
+const char *mapLayout[] = {"Vanilla", "Small", "Standard", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
 const char *startLocation[] = {"Ship", "Random", "Escape"};
 const char *saveAnimals[] = {"No", "Yes", "Optional", "Random"};
@@ -31,13 +31,13 @@ const char *mapArrows[] = {"Arrows", "Letters"};
 const char *doorLock[] = {"Small", "Large"};
 const char *mapRevealed[] = {"No", "Partial", "Full"};
 const char *mapStation[] = {"Partial", "Full"};
-const char *roomTheming[] = {"Vanilla", "Area Palettes", "Area Tiling", "None"};
+const char *roomTheming[] = {"vanilla", "palettes", "tiling", ""};
 const char *doorColors[] = {"vanilla", "alternate"};
 const char *music[] = {"area", "disabled"};
 const char *screenShaking[] = {"Vanilla", "Reduced", "Disabled"};
 const char *screenFlashing[] = {"Vanilla", "Reduced"};
 const char *lowEnergyBeeping[] = {"false", "true"};
-const char *suits[] = {"samus_vanilla","samus_dread","dread_samus","santamus","metroid_1_suit","samus_fusion_typea_green","dark_samus","dark_samus_2","dark_samus_reanimated","samus_zero-mission","samus_returns","samus_maid","hack_opposition","ped_suit","ascent","ancient_chozo","super_duper","samus_clocktoberfest","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","samus_blue","samus_greyscale","alcoon","alucard_sotn","arcana","bailey","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","cacodemon","captain_novolin","ceroba_ketsukane","chairdeep","charizard","charlotte_aran","crest","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","fedtrooper","fight","goku_child","infee_nitee","inkling-girl","junko","katt_aran","kiara","kiara_idol","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","modul","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","pyronett_a","richter_belmont","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","space_pirate","sprite_can","super_controid_pg","tails","tetris","thomcrow_corbin","wario","yoshi","zero_suit_samus","samus_outline","hitboxhelper2","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible"};
+const char *suits[] = {"samus_vanilla","samus_dread","dread_samus","santamus","metroid_1_suit","metroid_suit","samus_fusion_typea_green","dark_samus","dark_samus_2","dark_samus_reanimated","samus_zero-mission","samus_returns","samus_maid","hack_opposition","ped_suit","ascent","ancient_chozo","super_duper","samus_clocktoberfest","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","samus_blue","samus_greyscale","alcoon","alucard_sotn","arcana","bailey","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","cacodemon","captain_novolin","ceroba_ketsukane","chairdeep","charizard","charlotte_aran","crest","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","fedtrooper","fight","goku_child","infee_nitee","inkling-girl","junko","katt_aran","kiara","kiara_idol","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","lyn","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","modul","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","pyronett_a","richter_belmont","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","space_pirate","sprite_can","super_controid_pg","tails","tetris","thomcrow_corbin","wario","yoshi","zero_suit_samus","samus_outline","hitboxhelper2","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible"};
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area-themed"};
 const char *tileTheme[] = {"none","area_themed","scrambled","OuterCrateria","InnerCrateria","BlueBrinstar","GreenBrinstar","PinkBrinstar","RedBrinstar","UpperNorfair","LowerNorfair","WreckedShip","WestMaridia","YellowMaridia","MechaTourian","MetroidHabitat","Outline","Invisible"};
@@ -133,6 +133,8 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     CURLcode res;
     FILE *output_file;
     long response_code;
+    const char* roomNames = mapRandoSettings.roomNames ? "true" : "false";
+    const char* transitionLetters = strcmp(mapArrows[mapRandoSettings.mapArrows], "Letters") == 0 ? "true" : "false";
 
     output_file = fopen(output_path, "wb");
     if (!output_file) {
@@ -195,6 +197,9 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_r", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_up", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "moonwalk", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_names", CURLFORM_COPYCONTENTS, roomNames, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "transition_letters", CURLFORM_COPYCONTENTS, transitionLetters, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "item_dot_change", CURLFORM_COPYCONTENTS, dotsFade[mapRandoSettings.dotsFade], CURLFORM_END);
 
     // Set CURL options
     curl_easy_setopt(curl, CURLOPT_URL, seedUrl);
@@ -294,8 +299,6 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     json_object_object_add(other_settings, "etank_refill", eTankObject);
     struct json_object *areaAssignmentObject = json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]);
     json_object_object_add(other_settings, "area_assignment", areaAssignmentObject);
-    struct json_object *dotsFadeObject = json_object_new_string(dotsFade[mapRandoSettings.dotsFade]);
-    json_object_object_add(other_settings, "item_dot_change", dotsFadeObject);
     struct json_object *doorLockObject = json_object_new_string(doorLock[mapRandoSettings.doorLock]);
     json_object_object_add(other_settings, "door_locks_size", doorLockObject);
     struct json_object *mapRevealedObject = json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]);

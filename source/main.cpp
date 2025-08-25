@@ -161,7 +161,7 @@ int main(int, char**)
     {
         glfwPollEvents();
 
-        // Handle a few settings that change based onn other settings
+        // Handle a few settings that change based on other settings
         if ((mapRandoSettings.tileTheme != 1) && (mapRandoSettings.tileTheme != 0)) {
             mapRandoSettings.roomTheming = 3;
         }
@@ -231,8 +231,9 @@ int main(int, char**)
         // Map Layout
         ImGui::Text("Map Layout");
         ImGui::RadioButton("Vanilla##1", &mapRandoSettings.mapLayout, 0); ImGui::SameLine();
-        ImGui::RadioButton("Standard", &mapRandoSettings.mapLayout, 1); ImGui::SameLine();
-        ImGui::RadioButton("Wild", &mapRandoSettings.mapLayout, 2);
+        ImGui::RadioButton("Small##1", &mapRandoSettings.mapLayout, 1); ImGui::SameLine();
+        ImGui::RadioButton("Standard", &mapRandoSettings.mapLayout, 2); ImGui::SameLine();
+        ImGui::RadioButton("Wild", &mapRandoSettings.mapLayout, 3);
 
         // Doors
         ImGui::Text("Doors");
@@ -279,7 +280,7 @@ int main(int, char**)
         ImGui::RadioButton("Letters", &mapRandoSettings.mapArrows, 1);
 
         ImGui::Text("Door lock size on map:"); ImGui::SameLine();
-        ImGui::RadioButton("Small", &mapRandoSettings.doorLock, 0); ImGui::SameLine();
+        ImGui::RadioButton("Small##2", &mapRandoSettings.doorLock, 0); ImGui::SameLine();
         ImGui::RadioButton("Large", &mapRandoSettings.doorLock, 1);
 
         ImGui::Text("Map revealed from start:"); ImGui::SameLine();
@@ -293,7 +294,8 @@ int main(int, char**)
 
         ImGui::Checkbox("Energy free shinespark", &mapRandoSettings.freeShinespark); ImGui::SameLine();
         ImGui::Checkbox("Ultra low quality of life", &mapRandoSettings.ultraQuality); ImGui::SameLine();
-        ImGui::Checkbox("Race mode", &mapRandoSettings.raceMode);
+        ImGui::Checkbox("Race mode", &mapRandoSettings.raceMode);ImGui::SameLine();
+        ImGui::Checkbox("Room names", &mapRandoSettings.roomNames);
 
         ImGui::Separator();
 
