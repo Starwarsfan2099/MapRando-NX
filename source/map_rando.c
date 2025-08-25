@@ -17,7 +17,7 @@ struct Memory {
 
 // Data we need for sending settings
 const int version = 119;
-const char *baseUrl = "https://dev.maprando.com";
+const char *baseUrl = "https://maprando.com";
 const char *objectives[] =  {"None", "Bosses", "Minibosses", "Metroids", "Chozos", "Pirates", "Random"};
 const char *mapLayout[] = {"Vanilla", "Small", "Standard", "Wild"};
 const char *doors[] = {"Blue", "Ammo", "Beam"};
