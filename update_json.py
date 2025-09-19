@@ -2,7 +2,7 @@ import requests
 from pathlib import Path
 
 generateURL = "https://dev.maprando.com/generate"
-seedURL = "https://dev.maprando.com/seed/JfWx9J7Kt/"
+seedURL = "https://dev.maprando.com/seed/ryKPRMrrn/"
 jsonArrays = ["skillPresetsArr", "itemPresetsArr", "qolPresetsArr"]
 parsedArrays = {}
 settingsFileName = Path("source/settings.c")
@@ -10,10 +10,15 @@ maprandoFileName = Path("source/map_rando.c")
 sprites = ""
 otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":\"Standard\",\"item_dot_change\":\"Fade\",\"transition_letters\":true,\"door_locks_size\":\"Large\",\"maps_revealed\":\"No\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"race_mode\":false,\"random_seed\":null},\"debug\":false}"
 
-print("Generating settings.c...")
 response = requests.get(generateURL)
 if response.status_code == 200:
     source = response.text.splitlines()
+
+    for line in source:
+        if "<a class=\"nav-link m-1\" href=\"/\">" in line.strip():
+            print("Version:" + line.split(">")[1].split("<")[0])
+
+    print("Generating settings.c...")
 
     for line in source:
         for array in jsonArrays:
