@@ -3,11 +3,12 @@ from pathlib import Path
 
 generateURL = "https://dev.maprando.com/generate"
 seedURL = "https://dev.maprando.com/seed/ryKPRMrrn/"
-jsonArrays = ["skillPresetsArr", "itemPresetsArr", "qolPresetsArr"]
+jsonArrays = ["skillPresetsArr", "itemPresetsArr", "qolPresetsArr", "fullPresetsArr"]
 parsedArrays = {}
 settingsFileName = Path("source/settings.c")
 maprandoFileName = Path("source/map_rando.c")
 sprites = ""
+presets = []
 otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":\"Standard\",\"item_dot_change\":\"Fade\",\"transition_letters\":true,\"door_locks_size\":\"Large\",\"maps_revealed\":\"No\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"race_mode\":false,\"random_seed\":null},\"debug\":false}"
 
 response = requests.get(generateURL)
@@ -25,6 +26,19 @@ if response.status_code == 200:
             searchString = f"let {array}"
             if searchString in line:
                parsedArrays[array] = line.replace(f"    let {array} =[", "")
+               # Handle presets
+               if "fullPresetsArr" in line:
+                    for preset in line.split("\"name\":\""):
+                        if "skill_assumption_settings" in preset:
+                            presets.append(preset.split("\",\"skill_assumption_settings")[0])
+
+    print("Adding presets...")
+    with open(maprandoFileName,'r') as inputFile:
+        origFile = inputFile.readlines()
+        origFile[43] = "const char *presets[] = {\"None\",\"" + "\",\"".join(presets) + "\"};\n"
+
+        with open(maprandoFileName,'w') as outputFile:
+            outputFile.writelines(origFile)
 
     for array in parsedArrays:
         json = parsedArrays[array]
@@ -32,6 +46,7 @@ if response.status_code == 200:
         json = json[:-2]
         json = json.replace("\"", "\\\"")
         json = json.replace(",{\\\"preset\\\"", "\",\n\"{\\\"preset\\\"")
+        json = json.replace(",{\\\"version\\\"", "\",\n\"{\\\"version\\\"")
         json = "const char *" + array + "[] = {\n\"" + json
         parsedArrays[array] = json
 

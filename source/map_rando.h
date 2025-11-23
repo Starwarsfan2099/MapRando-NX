@@ -21,11 +21,14 @@ extern const char *suits[];
 extern const int suits_size;
 extern const char *tileTheme[];
 extern const int tile_size;
+extern const char *presets[];
+extern const int presets_size;
 extern char outputPath[512];
 
 // Settings struct
 struct mapRando {
     int skillLevel;
+    int preset;
     int itemProgression;
     int qualityOfLife;
     int objectives;

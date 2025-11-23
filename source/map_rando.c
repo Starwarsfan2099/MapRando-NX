@@ -41,7 +41,9 @@ const char *suits[] = {"samus_vanilla","samus_dread","dread_samus","santamus","m
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area-themed"};
 const char *tileTheme[] = {"none","area_themed","scrambled","OuterCrateria","InnerCrateria","BlueBrinstar","GreenBrinstar","PinkBrinstar","RedBrinstar","WarehouseBrinstar","UpperNorfair","LowerNorfair","WreckedShip","WestMaridia","YellowMaridia","MechaTourian","MetroidHabitat","Outline","Invisible"};
+const char *presets[] = {"None","Default","Community Race Season 4","Double Suit","Gravity 9 + 1","Varia + Movement","Metroid Objectives","4 Random Objectives","No Objectives"};
 const int tile_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
+const int presets_size = sizeof(presets) / sizeof(presets[0]);
 char outputPath[512];
 const char *userAgent = "Switch Homebrew - MapRando-NX";
 
@@ -292,36 +294,44 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         return 1;
     }
 
-    // Other settings
-    struct json_object *wallJumpObject = json_object_new_string(wallJumpMode[mapRandoSettings.wallJumpMode]);
-    json_object_object_add(other_settings, "wall_jump", wallJumpObject);
-    struct json_object *eTankObject = json_object_new_string(eTankMode[mapRandoSettings.eTankMode]);
-    json_object_object_add(other_settings, "etank_refill", eTankObject);
-    struct json_object *areaAssignmentObject = json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]);
-    json_object_object_add(other_settings, "area_assignment", areaAssignmentObject);
-    struct json_object *doorLockObject = json_object_new_string(doorLock[mapRandoSettings.doorLock]);
-    json_object_object_add(other_settings, "door_locks_size", doorLockObject);
-    struct json_object *mapRevealedObject = json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]);
-    json_object_object_add(other_settings, "maps_revealed", mapRevealedObject);
-    struct json_object *mapStationObject = json_object_new_string(mapStation[mapRandoSettings.mapStation]);
-    json_object_object_add(other_settings, "map_station_reveal", mapStationObject);
-    json_object_object_add(other_settings, "energy_free_shinesparks", json_object_new_boolean(mapRandoSettings.freeShinespark));
-    json_object_object_add(other_settings, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
-    json_object_object_add(other_settings, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
-
     // Build the json settings object
-    struct json_object *main_obj = json_object_new_object();
-    json_object_object_add(main_obj, "version", json_object_new_int(version));
-    json_object_object_add(main_obj, "name", json_object_new_string(""));
-    json_object_object_add(main_obj, "skill_assumption_settings", skill_preset);
-    json_object_object_add(main_obj, "item_progression_settings", item_presets);
-    json_object_object_add(main_obj, "quality_of_life_settings", qol_presets);
-    json_object_object_add(main_obj, "objectives_mode", json_object_new_string(objectives[mapRandoSettings.objectives]));
-    json_object_object_add(main_obj, "map_layout", json_object_new_string(mapLayout[mapRandoSettings.mapLayout]));
-    json_object_object_add(main_obj, "doors_mode", json_object_new_string(doors[mapRandoSettings.doors]));
-    json_object_object_add(main_obj, "start_location_mode", json_object_new_string(startLocation[mapRandoSettings.startLocation]));
-    json_object_object_add(main_obj, "save_animals", json_object_new_string(saveAnimals[mapRandoSettings.saveAnimals]));
-    json_object_object_add(main_obj, "other_settings", other_settings);
+    struct json_object *main_obj;
+    if (mapRandoSettings.preset != 0) {
+        // Use predefined json for the presets
+        TRACE("Using preset...");
+        main_obj = json_tokener_parse(fullPresetsArr[mapRandoSettings.preset - 1]);
+    } else {
+        // Other settings
+        TRACE("Not using preset...");
+        struct json_object *wallJumpObject = json_object_new_string(wallJumpMode[mapRandoSettings.wallJumpMode]);
+        json_object_object_add(other_settings, "wall_jump", wallJumpObject);
+        struct json_object *eTankObject = json_object_new_string(eTankMode[mapRandoSettings.eTankMode]);
+        json_object_object_add(other_settings, "etank_refill", eTankObject);
+        struct json_object *areaAssignmentObject = json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]);
+        json_object_object_add(other_settings, "area_assignment", areaAssignmentObject);
+        struct json_object *doorLockObject = json_object_new_string(doorLock[mapRandoSettings.doorLock]);
+        json_object_object_add(other_settings, "door_locks_size", doorLockObject);
+        struct json_object *mapRevealedObject = json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]);
+        json_object_object_add(other_settings, "maps_revealed", mapRevealedObject);
+        struct json_object *mapStationObject = json_object_new_string(mapStation[mapRandoSettings.mapStation]);
+        json_object_object_add(other_settings, "map_station_reveal", mapStationObject);
+        json_object_object_add(other_settings, "energy_free_shinesparks", json_object_new_boolean(mapRandoSettings.freeShinespark));
+        json_object_object_add(other_settings, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
+        json_object_object_add(other_settings, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
+
+        main_obj = json_object_new_object();
+        json_object_object_add(main_obj, "version", json_object_new_int(version));
+        json_object_object_add(main_obj, "name", json_object_new_string(""));
+        json_object_object_add(main_obj, "skill_assumption_settings", skill_preset);
+        json_object_object_add(main_obj, "item_progression_settings", item_presets);
+        json_object_object_add(main_obj, "quality_of_life_settings", qol_presets);
+        json_object_object_add(main_obj, "objectives_mode", json_object_new_string(objectives[mapRandoSettings.objectives]));
+        json_object_object_add(main_obj, "map_layout", json_object_new_string(mapLayout[mapRandoSettings.mapLayout]));
+        json_object_object_add(main_obj, "doors_mode", json_object_new_string(doors[mapRandoSettings.doors]));
+        json_object_object_add(main_obj, "start_location_mode", json_object_new_string(startLocation[mapRandoSettings.startLocation]));
+        json_object_object_add(main_obj, "save_animals", json_object_new_string(saveAnimals[mapRandoSettings.saveAnimals]));
+        json_object_object_add(main_obj, "other_settings", other_settings);
+    }
     //TRACE("Resulting JSON:\n%s\n", json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PRETTY));
 
     // Send the first request
@@ -331,7 +341,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         return 1;
     }
 
-    TRACE("Seed URL: %s\n", seedUrl);
+    TRACE("Seed URL: %s%s\n", baseUrl, seedUrl);
     consoleUpdate(NULL);
 
     // Construct the customization URL

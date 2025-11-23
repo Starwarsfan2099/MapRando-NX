@@ -185,6 +185,17 @@ int main(int, char**)
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::Begin("Map Rando Settings", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 
+        // Presets
+        ImGui::Text("Presets");
+        if (ImGui::BeginCombo("##Presets", presets[mapRandoSettings.preset])) {
+            for (int i = 0; i < presets_size; i++) {
+                if (ImGui::Selectable(presets[i], mapRandoSettings.preset == i)) {
+                    mapRandoSettings.preset = i;
+                }
+            }
+            ImGui::EndCombo();
+        }
+
         // Skill Assumptions Section
         ImGui::Text("Skill Assumptions");
         if (ImGui::BeginCombo("##SkillLevel", skillLevelLabels[mapRandoSettings.skillLevel])) {

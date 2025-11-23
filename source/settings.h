@@ -5,5 +5,6 @@ extern const char *otherSettings;
 extern const char *skillPresetsArr[];
 extern const char *itemPresetsArr[];
 extern const char *qolPresetsArr[];
+extern const char *fullPresetsArr[];
 
 #endif // SETTINGS_H
