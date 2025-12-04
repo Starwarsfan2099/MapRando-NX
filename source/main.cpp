@@ -45,7 +45,7 @@ static void errorCallback(int errorCode, const char* description)
 
 const char* qualityOfLifeLabels[] = {"Off", "Low", "Default", "High", "Max"};
 const char* itemProgressionLabels[] = {"Normal", "Tricky", "Technical", "Challenge", "Desolate"};
-const char* skillLevelLabels[] = {"Basic", "Medium", "Hard", "Very Hard", "Expert", "Extreme", "Insane"};
+const char* skillLevelLabels[] = {"Basic", "Medium", "Hard", "Very Hard", "Expert", "Expert+", "Extreme", "Extreme+", "Insane", "Insane+"};
 
 bool showPopup = false;
 bool showSavePopup = false;
