@@ -46,6 +46,7 @@ static void errorCallback(int errorCode, const char* description)
 const char* qualityOfLifeLabels[] = {"Off", "Low", "Default", "High", "Max"};
 const char* itemProgressionLabels[] = {"Normal", "Tricky", "Technical", "Challenge", "Desolate"};
 const char* skillLevelLabels[] = {"Basic", "Medium", "Hard", "Very Hard", "Expert", "Expert+", "Extreme", "Extreme+", "Insane", "Insane+"};
+const int skillLevelSize = sizeof(skillLevelLabels) / sizeof(skillLevelLabels[0]);
 
 bool showPopup = false;
 bool showSavePopup = false;
@@ -199,7 +200,7 @@ int main(int, char**)
         // Skill Assumptions Section
         ImGui::Text("Skill Assumptions");
         if (ImGui::BeginCombo("##SkillLevel", skillLevelLabels[mapRandoSettings.skillLevel])) {
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < skillLevelSize; i++) {
                 if (ImGui::Selectable(skillLevelLabels[i], mapRandoSettings.skillLevel == i)) {
                     mapRandoSettings.skillLevel = i;
                 }
