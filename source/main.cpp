@@ -45,7 +45,8 @@ static void errorCallback(int errorCode, const char* description)
 
 const char* qualityOfLifeLabels[] = {"Off", "Low", "Default", "High", "Max"};
 const char* itemProgressionLabels[] = {"Normal", "Tricky", "Technical", "Challenge", "Desolate"};
-const char* skillLevelLabels[] = {"Basic", "Medium", "Hard", "Very Hard", "Expert", "Extreme", "Insane"};
+const char* skillLevelLabels[] = {"Basic", "Medium", "Hard", "Very Hard", "Expert", "Expert+", "Extreme", "Extreme+", "Insane", "Insane+"};
+const int skillLevelSize = sizeof(skillLevelLabels) / sizeof(skillLevelLabels[0]);
 
 bool showPopup = false;
 bool showSavePopup = false;
@@ -185,10 +186,21 @@ int main(int, char**)
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::Begin("Map Rando Settings", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
 
+        // Presets
+        ImGui::Text("Presets");
+        if (ImGui::BeginCombo("##Presets", presets[mapRandoSettings.preset])) {
+            for (int i = 0; i < presets_size; i++) {
+                if (ImGui::Selectable(presets[i], mapRandoSettings.preset == i)) {
+                    mapRandoSettings.preset = i;
+                }
+            }
+            ImGui::EndCombo();
+        }
+
         // Skill Assumptions Section
         ImGui::Text("Skill Assumptions");
         if (ImGui::BeginCombo("##SkillLevel", skillLevelLabels[mapRandoSettings.skillLevel])) {
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < skillLevelSize; i++) {
                 if (ImGui::Selectable(skillLevelLabels[i], mapRandoSettings.skillLevel == i)) {
                     mapRandoSettings.skillLevel = i;
                 }

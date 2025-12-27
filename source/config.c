@@ -15,6 +15,7 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
     // Write settings as plain text
     fprintf(file,
             "skillLevel=%d\n"
+            "preset=%d\n"
             "itemProgression=%d\n"
             "qualityOfLife=%d\n"
             "objectives=%d\n"
@@ -47,6 +48,7 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             "outputRomPath=%s\n"
             "spoilerToken=%s\n",
             settings->skillLevel,
+            settings->preset,
             settings->itemProgression,
             settings->qualityOfLife,
             settings->objectives,
@@ -93,6 +95,7 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
     while (fgets(buffer, sizeof(buffer), file)) {
         // Parse each line
         if (sscanf(buffer, "skillLevel=%d", &settings->skillLevel) == 1) continue;
+        if (sscanf(buffer, "preset=%d", &settings->preset) == 1) continue;
         if (sscanf(buffer, "itemProgression=%d", &settings->itemProgression) == 1) continue;
         if (sscanf(buffer, "qualityOfLife=%d", &settings->qualityOfLife) == 1) continue;
         if (sscanf(buffer, "objectives=%d", &settings->objectives) == 1) continue;
