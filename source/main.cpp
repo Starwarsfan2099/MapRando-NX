@@ -306,8 +306,12 @@ int main(int, char**)
 
         ImGui::Checkbox("Energy free shinespark", &mapRandoSettings.freeShinespark); ImGui::SameLine();
         ImGui::Checkbox("Ultra low quality of life", &mapRandoSettings.ultraQuality); ImGui::SameLine();
-        ImGui::Checkbox("Race mode", &mapRandoSettings.raceMode);ImGui::SameLine();
-        ImGui::Checkbox("Room names", &mapRandoSettings.roomNames);
+        ImGui::Checkbox("Race mode", &mapRandoSettings.raceMode);
+
+        ImGui::Checkbox("Room names", &mapRandoSettings.roomNames);ImGui::SameLine();
+        ImGui::Checkbox("Boss icons", &mapRandoSettings.bossIcons);ImGui::SameLine();
+        ImGui::Checkbox("Miniboss icons", &mapRandoSettings.minibossIcons);ImGui::SameLine();
+        ImGui::Checkbox("Save icons", &mapRandoSettings.saveIcons);
 
         ImGui::Separator();
 

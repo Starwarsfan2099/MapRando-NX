@@ -44,6 +44,9 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             "roomPalettes=%d\n"
             "tileTheme=%d\n"
             "roomNames=%d\n"
+            "bossIcons=%d\n"
+            "minibossIcons=%d\n"
+            "saveIcons=%d\n"
             "inputRomPath=%s\n"
             "outputRomPath=%s\n"
             "spoilerToken=%s\n",
@@ -77,6 +80,9 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             settings->roomPalettes,
             settings->tileTheme,
             settings->roomNames,
+            settings->bossIcons,
+            settings->minibossIcons,
+            settings->saveIcons,
             settings->inputRomPath,
             settings->outputRomPath,
             settings->spoilerToken);
@@ -124,6 +130,9 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "roomPalettes=%d", &settings->roomPalettes) == 1) continue;
         if (sscanf(buffer, "tileTheme=%d", &settings->tileTheme) == 1) continue;
         if (sscanf(buffer, "roomNames=%d", &settings->roomNames) == 1) continue;
+        if (sscanf(buffer, "bossIcons=%d", &settings->bossIcons) == 1) continue;
+        if (sscanf(buffer, "minibossIcons=%d", &settings->minibossIcons) == 1) continue;
+        if (sscanf(buffer, "saveIcons=%d", &settings->saveIcons) == 1) continue;
 
         // Handle strings with spaces
         if (strncmp(buffer, "inputRomPath=", 13) == 0) {

@@ -57,6 +57,9 @@ struct mapRando {
     int roomPalettes;
     int tileTheme;
     bool roomNames;
+    bool bossIcons;
+    bool minibossIcons;
+    bool saveIcons;
     char inputRomPath[256];
     char outputRomPath[256];
     char spoilerToken[256];

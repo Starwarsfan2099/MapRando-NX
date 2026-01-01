@@ -136,6 +136,9 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     FILE *output_file;
     long response_code;
     const char* roomNames = mapRandoSettings.roomNames ? "true" : "false";
+    const char* bossIcons = mapRandoSettings.bossIcons ? "true" : "false";
+    const char* minibossIcons = mapRandoSettings.minibossIcons ? "true" : "false";
+    const char* saveIcons = mapRandoSettings.saveIcons ? "true" : "false";
     const char* transitionLetters = strcmp(mapArrows[mapRandoSettings.mapArrows], "Letters") == 0 ? "true" : "false";
 
     output_file = fopen(output_path, "wb");
@@ -200,6 +203,9 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_up", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "moonwalk", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_names", CURLFORM_COPYCONTENTS, roomNames, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "boss_icons", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "miniboss_icons", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_icons", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "transition_letters", CURLFORM_COPYCONTENTS, transitionLetters, CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "item_dot_change", CURLFORM_COPYCONTENTS, dotsFade[mapRandoSettings.dotsFade], CURLFORM_END);
 
@@ -208,6 +214,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, output_file);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+    //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // Perform the request
     res = curl_easy_perform(curl);
@@ -225,6 +232,20 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
 
     if (response_code != 200) {
         TRACE("Server returned status code: %ld\n", response_code);
+
+        // Print error contents
+        FILE *f = fopen(output_path, "rb");
+        if (f) {
+            char buf[128];
+            size_t n;
+            TRACE("Server response body:\n");
+            while ((n = fread(buf, 1, sizeof(buf) - 1, f)) > 0) {
+                buf[n] = '\0';
+                TRACE("%s", buf);
+            }
+            fclose(f);
+        }
+
         remove(output_path); // Remove incomplete file
         curl_formfree(formpost);
         curl_easy_cleanup(curl);
