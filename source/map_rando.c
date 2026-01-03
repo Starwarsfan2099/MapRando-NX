@@ -203,9 +203,9 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "spin_lock_up", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "moonwalk", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_names", CURLFORM_COPYCONTENTS, roomNames, CURLFORM_END);
-    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "boss_icons", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
-    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "miniboss_icons", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
-    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_icons", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "boss_icons", CURLFORM_COPYCONTENTS, bossIcons, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "miniboss_icons", CURLFORM_COPYCONTENTS, minibossIcons, CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_icons", CURLFORM_COPYCONTENTS, saveIcons, CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "transition_letters", CURLFORM_COPYCONTENTS, transitionLetters, CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "item_dot_change", CURLFORM_COPYCONTENTS, dotsFade[mapRandoSettings.dotsFade], CURLFORM_END);
 
@@ -379,7 +379,19 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         }
         char finalPath[256];
         snprintf(finalPath, sizeof(finalPath), "/map-rando-%s", seedPart);
-        snprintf(outputPath, sizeof(outputPath), "%s%s.sfc", mapRandoSettings.outputRomPath, finalPath);
+        int written = snprintf(
+            outputPath,
+            sizeof(outputPath),
+            "%s%s.sfc",
+            mapRandoSettings.outputRomPath,
+            finalPath
+        );
+
+        if (written < 0 || written >= (int)sizeof(outputPath)) {
+            fprintf(stderr, "Output path too long\n");
+            return false;  // or handle error appropriately
+        }
+
         TRACE("Combined Path: %s\n", outputPath);
     } else {
         TRACE("No valid seed part found.\n");

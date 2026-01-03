@@ -5,6 +5,14 @@
 
 #include <stdlib.h>
 
+static void copy_config_string(char *dst, size_t dst_size, const char *src)
+{
+    size_t len = strnlen(src, dst_size - 1);
+    memcpy(dst, src, len);
+    dst[len] = '\0';
+}
+
+
 int saveSettingsToFile(struct mapRando *settings, const char *filename) {
     TRACE("Saving settings...");
     FILE *file = fopen(filename, "w");
@@ -129,27 +137,36 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "suit=%d", &settings->suit) == 1) continue;
         if (sscanf(buffer, "roomPalettes=%d", &settings->roomPalettes) == 1) continue;
         if (sscanf(buffer, "tileTheme=%d", &settings->tileTheme) == 1) continue;
-        if (sscanf(buffer, "roomNames=%d", &settings->roomNames) == 1) continue;
-        if (sscanf(buffer, "bossIcons=%d", &settings->bossIcons) == 1) continue;
-        if (sscanf(buffer, "minibossIcons=%d", &settings->minibossIcons) == 1) continue;
-        if (sscanf(buffer, "saveIcons=%d", &settings->saveIcons) == 1) continue;
+        if (sscanf(buffer, "roomNames=%d", (int *)&settings->roomNames) == 1) continue;
+        if (sscanf(buffer, "bossIcons=%d", (int *)&settings->bossIcons) == 1) continue;
+        if (sscanf(buffer, "minibossIcons=%d", (int *)&settings->minibossIcons) == 1) continue;
+        if (sscanf(buffer, "saveIcons=%d", (int *)&settings->saveIcons) == 1) continue;
 
         // Handle strings with spaces
         if (strncmp(buffer, "inputRomPath=", 13) == 0) {
-            strncpy(settings->inputRomPath, buffer + 13, sizeof(settings->inputRomPath) - 1);
-            settings->inputRomPath[strcspn(settings->inputRomPath, "\n")] = '\0'; // Remove newline
+            copy_config_string(settings->inputRomPath,
+                            sizeof(settings->inputRomPath),
+                            buffer + 13);
+            settings->inputRomPath[strcspn(settings->inputRomPath, "\n")] = '\0';
             continue;
         }
+
         if (strncmp(buffer, "outputRomPath=", 14) == 0) {
-            strncpy(settings->outputRomPath, buffer + 14, sizeof(settings->outputRomPath) - 1);
-            settings->outputRomPath[strcspn(settings->outputRomPath, "\n")] = '\0'; // Remove newline
+            copy_config_string(settings->outputRomPath,
+                            sizeof(settings->outputRomPath),
+                            buffer + 14);
+            settings->outputRomPath[strcspn(settings->outputRomPath, "\n")] = '\0';
             continue;
         }
+
         if (strncmp(buffer, "spoilerToken=", 13) == 0) {
-            strncpy(settings->spoilerToken, buffer + 13, sizeof(settings->spoilerToken) - 1);
-            settings->spoilerToken[strcspn(settings->spoilerToken, "\n")] = '\0'; // Remove newline
+            copy_config_string(settings->spoilerToken,
+                            sizeof(settings->spoilerToken),
+                            buffer + 13);
+            settings->spoilerToken[strcspn(settings->spoilerToken, "\n")] = '\0';
             continue;
         }
+
     }
 
     fclose(file);

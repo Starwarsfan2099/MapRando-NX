@@ -99,7 +99,6 @@ void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double xpos, double yp
     ImGuiIO& io = ImGui::GetIO();
 
         // Update mouse position
-    const ImVec2 mouse_pos_backup = io.MousePos;
     io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
 #ifdef __EMSCRIPTEN__
     const bool focused = true; // Emscripten
@@ -348,8 +347,6 @@ static void ImGui_ImplGlfw_UpdateGamepads()
     memset(io.NavInputs, 0, sizeof(io.NavInputs));
     if ((io.ConfigFlags & ImGuiConfigFlags_NavEnableGamepad) == 0)
         return;
-
-    GLFWgamepadstate state;
  
     // if (glfwGetGamepadState(GLFW_JOYSTICK_1, &state))
     // {
