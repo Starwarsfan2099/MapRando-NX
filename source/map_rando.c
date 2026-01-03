@@ -388,8 +388,8 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         );
 
         if (written < 0 || written >= (int)sizeof(outputPath)) {
-            fprintf(stderr, "Output path too long\n");
-            return false;  // or handle error appropriately
+            TRACE("%s", "Output path too long\n");
+            return 0;
         }
 
         TRACE("Combined Path: %s\n", outputPath);
