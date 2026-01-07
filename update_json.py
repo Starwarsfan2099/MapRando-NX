@@ -16,7 +16,7 @@ if response.status_code == 200:
     source = response.text.splitlines()
 
     for line in source:
-        if "<a class=\"nav-link m-1\" href=\"/\">" in line.strip():
+        if "<a class=\"nav-link m-1\"" in line.strip():
             print("Version:" + line.split(">")[1].split("<")[0])
 
     print("Generating settings.c...")
