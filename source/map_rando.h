@@ -60,6 +60,7 @@ struct mapRando {
     bool bossIcons;
     bool minibossIcons;
     bool saveIcons;
+    bool speedBoosterSplit;
     char inputRomPath[256];
     char outputRomPath[256];
     char spoilerToken[256];
