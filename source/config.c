@@ -126,9 +126,10 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "doorLock=%d", &settings->doorLock) == 1) continue;
         if (sscanf(buffer, "mapRevealed=%d", &settings->mapRevealed) == 1) continue;
         if (sscanf(buffer, "mapStation=%d", &settings->mapStation) == 1) continue;
-        if (sscanf(buffer, "freeShinespark=%d", (int *)&settings->freeShinespark) == 1) continue;
-        if (sscanf(buffer, "ultraQuality=%d", (int *)&settings->ultraQuality) == 1) continue;
-        if (sscanf(buffer, "raceMode=%d", (int *)&settings->raceMode) == 1) continue;
+        int temp;
+        if (sscanf(buffer, "freeShinespark=%d", &temp) == 1) { settings->freeShinespark = (bool)temp; continue; }
+        if (sscanf(buffer, "ultraQuality=%d", &temp) == 1) { settings->ultraQuality = (bool)temp; continue; }
+        if (sscanf(buffer, "raceMode=%d", &temp) == 1) { settings->raceMode = (bool)temp; continue; }
         if (sscanf(buffer, "roomTheming=%d", &settings->roomTheming) == 1) continue;
         if (sscanf(buffer, "doorColors=%d", &settings->doorColors) == 1) continue;
         if (sscanf(buffer, "music=%d", &settings->music) == 1) continue;
@@ -139,11 +140,11 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "suit=%d", &settings->suit) == 1) continue;
         if (sscanf(buffer, "roomPalettes=%d", &settings->roomPalettes) == 1) continue;
         if (sscanf(buffer, "tileTheme=%d", &settings->tileTheme) == 1) continue;
-        if (sscanf(buffer, "roomNames=%d", (int *)&settings->roomNames) == 1) continue;
-        if (sscanf(buffer, "bossIcons=%d", (int *)&settings->bossIcons) == 1) continue;
-        if (sscanf(buffer, "minibossIcons=%d", (int *)&settings->minibossIcons) == 1) continue;
-        if (sscanf(buffer, "saveIcons=%d", (int *)&settings->saveIcons) == 1) continue;
-        if (sscanf(buffer, "speedBoosterSplit=%d", (int *)&settings->speedBoosterSplit) == 1) continue;
+        if (sscanf(buffer, "roomNames=%d", &temp) == 1) { settings->roomNames = (bool)temp; continue; }
+        if (sscanf(buffer, "bossIcons=%d", &temp) == 1) { settings->bossIcons = (bool)temp; continue; }
+        if (sscanf(buffer, "minibossIcons=%d", &temp) == 1) { settings->minibossIcons = (bool)temp; continue; }
+        if (sscanf(buffer, "saveIcons=%d", &temp) == 1) { settings->saveIcons = (bool)temp; continue; }
+        if (sscanf(buffer, "speedBoosterSplit=%d", &temp) == 1) { settings->speedBoosterSplit = (bool)temp; continue; }
 
         // Handle strings with spaces
         if (strncmp(buffer, "inputRomPath=", 13) == 0) {

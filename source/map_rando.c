@@ -74,9 +74,6 @@ char *send_request_1(const char *file_path, const char *spoiler_token, const cha
     struct curl_httppost *formpost = NULL;
     struct curl_httppost *lastptr = NULL;
 
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl = curl_easy_init();
-
     curl = curl_easy_init();
     if (!curl) {
         TRACE("Failed to initialize CURL\n");
@@ -116,6 +113,7 @@ char *send_request_1(const char *file_path, const char *spoiler_token, const cha
 
     if (res != CURLE_OK) {
         TRACE("curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+        free(chunk.response);
         curl_easy_cleanup(curl);
         curl_formfree(formpost);
         return NULL;
@@ -124,7 +122,6 @@ char *send_request_1(const char *file_path, const char *spoiler_token, const cha
     // Clean up
     curl_easy_cleanup(curl);
     curl_formfree(formpost);
-    curl_global_cleanup();
 
     return chunk.response;
 }
@@ -148,7 +145,6 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     }
 
     // Initialize CURL
-    curl_global_init(CURL_GLOBAL_ALL);
     curl = curl_easy_init();
     if (!curl) {
         TRACE("Failed to initialize CURL\n");
@@ -255,36 +251,34 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     // Clean up
     curl_formfree(formpost);
     curl_easy_cleanup(curl);
-    curl_global_cleanup();
 
     return 0;
 }
 
 // Function to extract the seed_url value from the JSON response
 char *extract_seed_url(const char *response) {
-    const char *key = "\"seed_url\":\"";
-    char *start = strstr(response, key);
-    if (!start) {
+    struct json_object *root = json_tokener_parse(response);
+    if (!root) {
+        TRACE("Error: Failed to parse JSON response.\n");
+        return NULL;
+    }
+
+    struct json_object *seed_url_obj;
+    if (!json_object_object_get_ex(root, "seed_url", &seed_url_obj)) {
         TRACE("Error: seed_url not found in response.\n");
+        json_object_put(root);
         return NULL;
     }
 
-    start += strlen(key);
-    char *end = strchr(start, '"');
-    if (!end) {
-        TRACE("Error: Invalid JSON format.\n");
+    const char *seed_url_str = json_object_get_string(seed_url_obj);
+    if (!seed_url_str) {
+        TRACE("Error: seed_url is not a string.\n");
+        json_object_put(root);
         return NULL;
     }
 
-    size_t length = end - start;
-    char *seedUrl = (char *)malloc(length + 1);
-    if (!seedUrl) {
-        TRACE("Failed to allocate memory");
-        return NULL;
-    }
-
-    strncpy(seedUrl, start, length);
-    seedUrl[length] = '\0'; // Null-terminate the string
+    char *seedUrl = strdup(seed_url_str);
+    json_object_put(root);
     return seedUrl;
 }
 
@@ -292,49 +286,64 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     const char* speedBoosterSplit = mapRandoSettings.speedBoosterSplit ? "Split" : "Vanilla";
     TRACE("Generating...");
 
-    struct json_object *skill_preset = json_tokener_parse(skillPresetsArr[mapRandoSettings.skillLevel + 1]);
-    if (skill_preset == NULL) {
-        TRACE("Failed to parse skill_preset JSON string.\n");
-        return 1;
-    }
+    struct json_object *main_obj = NULL;
+    struct json_object *skill_preset = NULL;
+    struct json_object *item_presets = NULL;
+    struct json_object *qol_presets = NULL;
+    struct json_object *other_settings_obj = NULL;
 
-    struct json_object *item_presets = json_tokener_parse(itemPresetsArr[mapRandoSettings.itemProgression]);
-    if (item_presets == NULL) {
-        TRACE("Failed to parse item_presets JSON string.\n");
-        return 1;
-    }
-
-    struct json_object *qol_presets = json_tokener_parse(qolPresetsArr[mapRandoSettings.qualityOfLife]);
-    if (qol_presets == NULL) {
-        TRACE("Failed to parse qol_presets JSON string.\n");
-        return 1;
-    }
-
-    struct json_object *other_settings = json_tokener_parse(otherSettings);
-    if (other_settings == NULL) {
-        TRACE("Failed to parse other_settings JSON string.\n");
-        return 1;
-    }
-
-    // Build the json settings object
-    struct json_object *main_obj;
     if (mapRandoSettings.preset != 0) {
         // Use predefined json for the presets
         TRACE("Using preset...");
         main_obj = json_tokener_parse(fullPresetsArr[mapRandoSettings.preset - 1]);
+        if (main_obj == NULL) {
+            TRACE("Failed to parse full preset JSON.\n");
+            return 1;
+        }
     } else {
         // Other settings
         TRACE("Not using preset...");
-        json_object_object_add(other_settings, "wall_jump", json_object_new_string(wallJumpMode[mapRandoSettings.wallJumpMode]));
-        json_object_object_add(other_settings, "etank_refill", json_object_new_string(eTankMode[mapRandoSettings.eTankMode]));
-        json_object_object_add(other_settings, "area_assignment", json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]));
-        json_object_object_add(other_settings, "door_locks_size", json_object_new_string(doorLock[mapRandoSettings.doorLock]));
-        json_object_object_add(other_settings, "maps_revealed", json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]));
-        json_object_object_add(other_settings, "map_station_reveal", json_object_new_string(mapStation[mapRandoSettings.mapStation]));
-        json_object_object_add(other_settings, "energy_free_shinesparks", json_object_new_boolean(mapRandoSettings.freeShinespark));
-        json_object_object_add(other_settings, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
-        json_object_object_add(other_settings, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
-        json_object_object_add(other_settings, "speed_booster", json_object_new_string(speedBoosterSplit));
+        
+        skill_preset = json_tokener_parse(skillPresetsArr[mapRandoSettings.skillLevel + 1]);
+        if (skill_preset == NULL) {
+            TRACE("Failed to parse skill_preset JSON string.\n");
+            return 1;
+        }
+
+        item_presets = json_tokener_parse(itemPresetsArr[mapRandoSettings.itemProgression]);
+        if (item_presets == NULL) {
+            TRACE("Failed to parse item_presets JSON string.\n");
+            json_object_put(skill_preset);
+            return 1;
+        }
+
+        qol_presets = json_tokener_parse(qolPresetsArr[mapRandoSettings.qualityOfLife]);
+        if (qol_presets == NULL) {
+            TRACE("Failed to parse qol_presets JSON string.\n");
+            json_object_put(skill_preset);
+            json_object_put(item_presets);
+            return 1;
+        }
+
+        other_settings_obj = json_tokener_parse(otherSettings);
+        if (other_settings_obj == NULL) {
+            TRACE("Failed to parse other_settings JSON string.\n");
+            json_object_put(skill_preset);
+            json_object_put(item_presets);
+            json_object_put(qol_presets);
+            return 1;
+        }
+
+        json_object_object_add(other_settings_obj, "wall_jump", json_object_new_string(wallJumpMode[mapRandoSettings.wallJumpMode]));
+        json_object_object_add(other_settings_obj, "etank_refill", json_object_new_string(eTankMode[mapRandoSettings.eTankMode]));
+        json_object_object_add(other_settings_obj, "area_assignment", json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]));
+        json_object_object_add(other_settings_obj, "door_locks_size", json_object_new_string(doorLock[mapRandoSettings.doorLock]));
+        json_object_object_add(other_settings_obj, "maps_revealed", json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]));
+        json_object_object_add(other_settings_obj, "map_station_reveal", json_object_new_string(mapStation[mapRandoSettings.mapStation]));
+        json_object_object_add(other_settings_obj, "energy_free_shinesparks", json_object_new_boolean(mapRandoSettings.freeShinespark));
+        json_object_object_add(other_settings_obj, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
+        json_object_object_add(other_settings_obj, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
+        json_object_object_add(other_settings_obj, "speed_booster", json_object_new_string(speedBoosterSplit));
 
         main_obj = json_object_new_object();
         json_object_object_add(main_obj, "version", json_object_new_int(version));
@@ -347,14 +356,27 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         json_object_object_add(main_obj, "doors_mode", json_object_new_string(doors[mapRandoSettings.doors]));
         json_object_object_add(main_obj, "start_location_mode", json_object_new_string(startLocation[mapRandoSettings.startLocation]));
         json_object_object_add(main_obj, "save_animals", json_object_new_string(saveAnimals[mapRandoSettings.saveAnimals]));
-        json_object_object_add(main_obj, "other_settings", other_settings);
+        json_object_object_add(main_obj, "other_settings", other_settings_obj);
     }
     //TRACE("Resulting JSON:\n%s\n", json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PRETTY));
 
     // Send the first request
-    char *seedUrl = extract_seed_url(send_request_1(mapRandoSettings.inputRomPath, mapRandoSettings.spoilerToken, json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PLAIN)));
-    if (!seedUrl) {
+    const char *json_str = json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PLAIN);
+    char *response1 = send_request_1(mapRandoSettings.inputRomPath, mapRandoSettings.spoilerToken, json_str);
+    
+    // We can free main_obj now
+    json_object_put(main_obj);
+
+    if (!response1) {
         TRACE("Failed to send the first request.\n");
+        return 1;
+    }
+
+    char *seedUrl = extract_seed_url(response1);
+    free(response1);
+
+    if (!seedUrl) {
+        TRACE("Failed to extract seed URL.\n");
         return 1;
     }
 
@@ -369,12 +391,13 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     char *seedPart = strstr(seedUrl, "/seed/");
     if (seedPart != NULL) {
         seedPart += strlen("/seed/");
-        size_t len = strlen(seedPart);
-        if (len > 0 && seedPart[len - 1] == '/') {
-            seedPart[len - 1] = '\0';  // Remove the last character
+        char *tempSeed = strdup(seedPart);
+        size_t len = strlen(tempSeed);
+        if (len > 0 && tempSeed[len - 1] == '/') {
+            tempSeed[len - 1] = '\0';  // Remove the last character
         }
         char finalPath[256];
-        snprintf(finalPath, sizeof(finalPath), "/map-rando-%s", seedPart);
+        snprintf(finalPath, sizeof(finalPath), "/map-rando-%s", tempSeed);
         int written = snprintf(
             outputPath,
             sizeof(outputPath),
@@ -382,10 +405,12 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
             mapRandoSettings.outputRomPath,
             finalPath
         );
+        free(tempSeed);
 
         if (written < 0 || written >= (int)sizeof(outputPath)) {
             TRACE("%s", "Output path too long\n");
-            return 0;
+            free(seedUrl);
+            return 1;
         }
 
         TRACE("Combined Path: %s\n", outputPath);
@@ -394,7 +419,10 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     }
 
     // Send the second request
-    if (send_request_2(customize_url, mapRandoSettings.inputRomPath, outputPath, mapRandoSettings) != 0) {
+    int res2 = send_request_2(customize_url, mapRandoSettings.inputRomPath, outputPath, mapRandoSettings);
+    free(seedUrl);
+
+    if (res2 != 0) {
         TRACE("Failed to send the second request.\n");
         return 1;
     }

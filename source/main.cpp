@@ -59,6 +59,7 @@ bool internetConnection = true;
 int main(int, char**)
 {
     socketInitializeDefault();
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 
     nifmInitialize(NifmServiceType_User);
 
@@ -130,26 +131,24 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    io.Fonts->AddFontDefault();
     {
         PlFontData standard, extended;
-    static ImWchar extended_range[] = {0xe000, 0xe152};
-    if (R_SUCCEEDED(plGetSharedFontByType(&standard,     PlSharedFontType_Standard)) &&
-            R_SUCCEEDED(plGetSharedFontByType(&extended, PlSharedFontType_NintendoExt))) {
-        std::uint8_t *px;
-        int w, h, bpp;
-        ImFontConfig font_cfg;
+        static ImWchar extended_range[] = {0xe000, 0xe152, 0};
+        if (R_SUCCEEDED(plGetSharedFontByType(&standard,     PlSharedFontType_Standard)) &&
+                R_SUCCEEDED(plGetSharedFontByType(&extended, PlSharedFontType_NintendoExt))) {
+            std::uint8_t *px;
+            int w, h, bpp;
+            ImFontConfig font_cfg;
 
-        font_cfg.FontDataOwnedByAtlas = false;
-        io.Fonts->AddFontFromMemoryTTF(standard.address, standard.size, 20.0f, &font_cfg, io.Fonts->GetGlyphRangesDefault());
-        font_cfg.MergeMode            = true;
-        io.Fonts->AddFontFromMemoryTTF(extended.address, extended.size, 20.0f, &font_cfg, extended_range);
+            font_cfg.FontDataOwnedByAtlas = false;
+            io.Fonts->AddFontFromMemoryTTF(standard.address, standard.size, 20.0f, &font_cfg, io.Fonts->GetGlyphRangesDefault());
+            font_cfg.MergeMode            = true;
+            io.Fonts->AddFontFromMemoryTTF(extended.address, extended.size, 20.0f, &font_cfg, extended_range);
 
-        io.Fonts->GetTexDataAsAlpha8(&px, &w, &h, &bpp);
-        io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
-        io.Fonts->Build();
-    }
-
+            io.Fonts->GetTexDataAsAlpha8(&px, &w, &h, &bpp);
+            io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
+            io.Fonts->Build();
+        }
     }
     TRACE("Done fonts");
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -487,6 +486,10 @@ int main(int, char**)
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
+    
+    nifmExit();
+    plExit();
+    curl_global_cleanup();
     socketExit();
 
     return 0;
