@@ -370,7 +370,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         json_object_object_add(main_obj, "save_animals", json_object_new_string(saveAnimals[mapRandoSettings.saveAnimals]));
         json_object_object_add(main_obj, "other_settings", other_settings_obj);
     }
-    TRACE("Resulting JSON:\n%s\n", json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PRETTY));
+    //TRACE("Resulting JSON:\n%s\n", json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PRETTY));
 
     // Send the first request
     const char *json_str = json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PLAIN);
