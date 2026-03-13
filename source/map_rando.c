@@ -25,7 +25,7 @@ const char *startLocation[] = {"Ship", "Random", "Escape"};
 const char *saveAnimals[] = {"No", "Yes", "Optional", "Random"};
 const char *wallJumpMode[] = {"Vanilla", "Collectible"};
 const char *eTankMode[] = {"Disabled", "Vanilla", "Full"};
-const char *areaAssignment[] = {"Ordered", "Standard", "Random"};
+const char *areaAssignment[] = {"Standard", "Size", "Depth", "Random"};
 const char *dotsFade[] = {"Fade", "Disappear"};
 const char *mapArrows[] = {"Arrows", "Letters"};
 const char *doorLock[] = {"Small", "Large"};
@@ -291,6 +291,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     struct json_object *item_presets = NULL;
     struct json_object *qol_presets = NULL;
     struct json_object *other_settings_obj = NULL;
+    struct json_object *area_assignment_obj = NULL;
 
     if (mapRandoSettings.preset != 0) {
         // Use predefined json for the presets
@@ -336,7 +337,18 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
 
         json_object_object_add(other_settings_obj, "wall_jump", json_object_new_string(wallJumpMode[mapRandoSettings.wallJumpMode]));
         json_object_object_add(other_settings_obj, "etank_refill", json_object_new_string(eTankMode[mapRandoSettings.eTankMode]));
-        json_object_object_add(other_settings_obj, "area_assignment", json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]));
+        if (json_object_object_get_ex(other_settings_obj, "area_assignment", &area_assignment_obj)) {
+            // Standard
+            if (mapRandoSettings.areaAssignment == 0) {
+                json_object_object_add(area_assignment_obj, "preset", json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]));
+                json_object_object_add(area_assignment_obj, "base_order", json_object_new_string("Size"));
+            }
+            // Size, Depth, and Random
+            else {
+                json_object_object_add(area_assignment_obj, "preset", json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]));
+                json_object_object_add(area_assignment_obj, "base_order", json_object_new_string(areaAssignment[mapRandoSettings.areaAssignment]));
+            }
+        }
         json_object_object_add(other_settings_obj, "door_locks_size", json_object_new_string(doorLock[mapRandoSettings.doorLock]));
         json_object_object_add(other_settings_obj, "maps_revealed", json_object_new_string(mapRevealed[mapRandoSettings.mapRevealed]));
         json_object_object_add(other_settings_obj, "map_station_reveal", json_object_new_string(mapStation[mapRandoSettings.mapStation]));
@@ -358,7 +370,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         json_object_object_add(main_obj, "save_animals", json_object_new_string(saveAnimals[mapRandoSettings.saveAnimals]));
         json_object_object_add(main_obj, "other_settings", other_settings_obj);
     }
-    //TRACE("Resulting JSON:\n%s\n", json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PRETTY));
+    TRACE("Resulting JSON:\n%s\n", json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PRETTY));
 
     // Send the first request
     const char *json_str = json_object_to_json_string_ext(main_obj, JSON_C_TO_STRING_PLAIN);

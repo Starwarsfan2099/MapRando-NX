@@ -278,9 +278,10 @@ int main(int, char**)
         ImGui::RadioButton("Full", &mapRandoSettings.eTankMode, 2);
 
         ImGui::Text("Area Assignment:"); ImGui::SameLine();
-        ImGui::RadioButton("Ordered", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
-        ImGui::RadioButton("Standard##2", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
-        ImGui::RadioButton("Random##4", &mapRandoSettings.areaAssignment, 2);
+        ImGui::RadioButton("Standard##2", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
+        ImGui::RadioButton("Size", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
+        ImGui::RadioButton("Depth", &mapRandoSettings.areaAssignment, 2); ImGui::SameLine();
+        ImGui::RadioButton("Random##4", &mapRandoSettings.areaAssignment, 3);
 
         ImGui::Text("Item Dots After Collection:"); ImGui::SameLine();
         ImGui::RadioButton("Fade", &mapRandoSettings.dotsFade, 0); ImGui::SameLine();
