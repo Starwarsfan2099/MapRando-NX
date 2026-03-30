@@ -37,6 +37,8 @@ const char *music[] = {"area", "disabled"};
 const char *screenShaking[] = {"Vanilla", "Reduced", "Disabled"};
 const char *screenFlashing[] = {"Vanilla", "Reduced"};
 const char *lowEnergyBeeping[] = {"false", "true"};
+const char *statuesHallwayOptions[] = {"Disabled", "Default", "Enabled"};
+const char *statuesHallwayAudioOptions[] = {"Disabled", "Enabled", "Louder"};
 const char *suits[] = {"samus_vanilla","metroid_1_suit","samus_zero-mission","samus_returns","samus_fusion_typea_green","prime_series_suit","ped_suit","samus_dread","dread_samus","metroid_suit","ascent","ancient_chozo_pg","super_duper","hack_opposition","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","dark_samus","dark_samus_2","dark_samus_reanimated","samus_maid","santamus","samus_blue","bastion","samus_clocktoberfest","samus_greyscale","samus_outline","alcoon","alucard_sotn","arcana","bailey","bart_simpson","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","cacodemon","captain_novolin","ceroba_ketsukane","chairdeep","charizard","charlotte_aran","crest","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","elista","fedtrooper","fight","goku_child","green_mm","infee_nitee","inkling-girl","junko","katt_aran","kiara","kiara_idol","king_of_pop","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","lyn","maddie_and_baddie","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","modul","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","pyronett_a","richter_belmont","alien_3_ripley","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","advance_sonic","space_pirate","spider_man","spongebob","sprite_can","super_controid_pg","tails","tetris","terrifier","thomcrow_corbin","V1","wario","yoshi","zero_suit_samus","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible","hitboxhelper2","magic_pants"};
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area_themed"};
@@ -180,6 +182,8 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "disable_beeping", CURLFORM_COPYCONTENTS, lowEnergyBeeping[mapRandoSettings.lowEnergyBeeping], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "room_palettes", CURLFORM_COPYCONTENTS, roomPalettes[mapRandoSettings.roomPalettes], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "tile_theme", CURLFORM_COPYCONTENTS, tileTheme[mapRandoSettings.tileTheme], CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "statues_hallway_tiling", CURLFORM_COPYCONTENTS, statuesHallwayOptions[mapRandoSettings.statuesHallwayTiling], CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "statues_hallway_audio", CURLFORM_COPYCONTENTS, statuesHallwayAudioOptions[mapRandoSettings.statuesHallwayAudio], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "reserve_hud_style", CURLFORM_COPYCONTENTS, "true", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "vanilla_screw_attack_animation", CURLFORM_COPYCONTENTS, "false", CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "control_shot", CURLFORM_COPYCONTENTS, "X", CURLFORM_END);

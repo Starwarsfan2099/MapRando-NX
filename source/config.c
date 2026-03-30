@@ -56,6 +56,8 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             "minibossIcons=%d\n"
             "saveIcons=%d\n"
             "speedBoosterSplit=%d\n"
+            "statuesHallwayTiling=%d\n"
+            "statuesHallwayAudio=%d\n"
             "inputRomPath=%s\n"
             "outputRomPath=%s\n"
             "spoilerToken=%s\n",
@@ -93,6 +95,8 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             settings->minibossIcons,
             settings->saveIcons,
             settings->speedBoosterSplit,
+            settings->statuesHallwayTiling,
+            settings->statuesHallwayAudio,
             settings->inputRomPath,
             settings->outputRomPath,
             settings->spoilerToken);
@@ -145,6 +149,8 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "minibossIcons=%d", &temp) == 1) { settings->minibossIcons = (bool)temp; continue; }
         if (sscanf(buffer, "saveIcons=%d", &temp) == 1) { settings->saveIcons = (bool)temp; continue; }
         if (sscanf(buffer, "speedBoosterSplit=%d", &temp) == 1) { settings->speedBoosterSplit = (bool)temp; continue; }
+        if (sscanf(buffer, "statuesHallwayTiling=%d", &settings->statuesHallwayTiling) == 1) continue;
+        if (sscanf(buffer, "statuesHallwayAudio=%d", &settings->statuesHallwayAudio) == 1) continue;
 
         // Handle strings with spaces
         if (strncmp(buffer, "inputRomPath=", 13) == 0) {

@@ -353,6 +353,16 @@ int main(int, char**)
         ImGui::RadioButton("Vanilla##8", &mapRandoSettings.lowEnergyBeeping, 0); ImGui::SameLine();
         ImGui::RadioButton("Disabled##3", &mapRandoSettings.lowEnergyBeeping, 1);
 
+        ImGui::Text("Statues Hallway tiling:"); ImGui::SameLine();
+        ImGui::RadioButton("Disabled##4", &mapRandoSettings.statuesHallwayTiling, 0); ImGui::SameLine();
+        ImGui::RadioButton("Default##2", &mapRandoSettings.statuesHallwayTiling, 1); ImGui::SameLine();
+        ImGui::RadioButton("Enabled##2", &mapRandoSettings.statuesHallwayTiling, 2);
+
+        ImGui::Text("Statues Hallway Audio:"); ImGui::SameLine();
+        ImGui::RadioButton("Disabled##5", &mapRandoSettings.statuesHallwayAudio, 0); ImGui::SameLine();
+        ImGui::RadioButton("Enabled##3", &mapRandoSettings.statuesHallwayAudio, 1); ImGui::SameLine();
+        ImGui::RadioButton("Louder", &mapRandoSettings.statuesHallwayAudio, 2);
+
         //Tile themes
         ImGui::Text("Tile theme:");
         if (ImGui::BeginCombo("##tileTheme", tileTheme[mapRandoSettings.tileTheme])) {
