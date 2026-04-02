@@ -35,7 +35,7 @@ if response.status_code == 200:
     print("Adding presets...")
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
-        origFile[43] = "const char *presets[] = {\"None\",\"" + "\",\"".join(presets) + "\"};\n"
+        origFile[45] = "const char *presets[] = {\"None\",\"" + "\",\"".join(presets) + "\"};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)
@@ -72,7 +72,7 @@ if response.status_code == 200:
     print("Modifying map_rando.c...")
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
-        origFile[39] = "const char *suits[] = {" + sprites[:-1] + "};\n"
+        origFile[41] = "const char *suits[] = {" + sprites[:-1] + "};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)
@@ -97,7 +97,7 @@ if response.status_code == 200:
     print("Modifying map_rando.c again...")
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
-        origFile[42] = "const char *tileTheme[] = {" + tiles[:-1] + "};\n"
+        origFile[44] = "const char *tileTheme[] = {" + tiles[:-1] + "};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)
