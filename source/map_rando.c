@@ -43,7 +43,7 @@ const char *suits[] = {"samus_vanilla","metroid_1_suit","samus_zero-mission","sa
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area_themed"};
 const char *tileTheme[] = {"none","area_themed","scrambled","OuterCrateria","InnerCrateria","BlueBrinstar","GreenBrinstar","PinkBrinstar","RedBrinstar","WarehouseBrinstar","UpperNorfair","LowerNorfair","WreckedShip","WestMaridia","YellowMaridia","Bedrock","MechaTourian","MetroidHabitat","StatuesHallway","Outline","Invisible"};
-const char *presets[] = {"None","Default","Community Race Season 4"};
+const char *presets[] = {"None","Default","Community Race Season 4","Mentor Tournament"};
 const int tile_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
 const int presets_size = sizeof(presets) / sizeof(presets[0]);
 char outputPath[512];
