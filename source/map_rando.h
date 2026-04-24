@@ -64,6 +64,7 @@ struct mapRando {
     bool speedBoosterSplit;
     int statuesHallwayTiling;
     int statuesHallwayAudio;
+    int mapTheme;
     char inputRomPath[256];
     char outputRomPath[256];
     char spoilerToken[256];

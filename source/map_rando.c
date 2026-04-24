@@ -44,6 +44,7 @@ const int suits_size = sizeof(suits) / sizeof(suits[0]);
 const char *roomPalettes[] = {"vanilla", "area_themed"};
 const char *tileTheme[] = {"none","area_themed","scrambled","OuterCrateria","InnerCrateria","BlueBrinstar","GreenBrinstar","PinkBrinstar","RedBrinstar","WarehouseBrinstar","UpperNorfair","LowerNorfair","WreckedShip","WestMaridia","YellowMaridia","Bedrock","MechaTourian","MetroidHabitat","StatuesHallway","Outline","Invisible"};
 const char *presets[] = {"None","Default","Community Race Season 4","Mentor Tournament"};
+const char *mapThemes[] = {"Dark", "Light"};
 const int tile_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
 const int presets_size = sizeof(presets) / sizeof(presets[0]);
 char outputPath[512];
@@ -208,6 +209,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_icons", CURLFORM_COPYCONTENTS, saveIcons, CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "transition_letters", CURLFORM_COPYCONTENTS, transitionLetters, CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "item_dot_change", CURLFORM_COPYCONTENTS, dotsFade[mapRandoSettings.dotsFade], CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "map_theme", CURLFORM_COPYCONTENTS, mapThemes[mapRandoSettings.mapTheme], CURLFORM_END);
 
     // Set CURL options
     curl_easy_setopt(curl, CURLOPT_URL, seedUrl);

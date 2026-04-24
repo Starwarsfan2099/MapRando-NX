@@ -363,6 +363,10 @@ int main(int, char**)
         ImGui::RadioButton("Enabled##3", &mapRandoSettings.statuesHallwayAudio, 1); ImGui::SameLine();
         ImGui::RadioButton("Louder", &mapRandoSettings.statuesHallwayAudio, 2);
 
+        ImGui::Text("Map Theme:"); ImGui::SameLine();
+        ImGui::RadioButton("Dark", &mapRandoSettings.mapTheme, 0); ImGui::SameLine();
+        ImGui::RadioButton("Light", &mapRandoSettings.mapTheme, 1);
+        
         //Tile themes
         ImGui::Text("Tile theme:");
         if (ImGui::BeginCombo("##tileTheme", tileTheme[mapRandoSettings.tileTheme])) {
