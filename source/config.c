@@ -153,7 +153,7 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "speedBoosterSplit=%d", &temp) == 1) { settings->speedBoosterSplit = (bool)temp; continue; }
         if (sscanf(buffer, "statuesHallwayTiling=%d", &settings->statuesHallwayTiling) == 1) continue;
         if (sscanf(buffer, "statuesHallwayAudio=%d", &settings->statuesHallwayAudio) == 1) continue;
-        if (sscanf(buffer, "mapTheme=%d", &settings->statuesHallwayAudio) == 1) continue;
+        if (sscanf(buffer, "mapTheme=%d", &settings->mapTheme) == 1) continue;
 
         // Handle strings with spaces
         if (strncmp(buffer, "inputRomPath=", 13) == 0) {
