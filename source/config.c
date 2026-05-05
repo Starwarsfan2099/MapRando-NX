@@ -5,6 +5,14 @@
 
 #include <stdlib.h>
 
+static void copy_config_string(char *dst, size_t dst_size, const char *src)
+{
+    size_t len = strnlen(src, dst_size - 1);
+    memcpy(dst, src, len);
+    dst[len] = '\0';
+}
+
+
 int saveSettingsToFile(struct mapRando *settings, const char *filename) {
     TRACE("Saving settings...");
     FILE *file = fopen(filename, "w");
@@ -44,6 +52,13 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             "roomPalettes=%d\n"
             "tileTheme=%d\n"
             "roomNames=%d\n"
+            "bossIcons=%d\n"
+            "minibossIcons=%d\n"
+            "saveIcons=%d\n"
+            "speedBoosterSplit=%d\n"
+            "statuesHallwayTiling=%d\n"
+            "statuesHallwayAudio=%d\n"
+            "mapTheme=%d\n"
             "inputRomPath=%s\n"
             "outputRomPath=%s\n"
             "spoilerToken=%s\n",
@@ -77,6 +92,13 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             settings->roomPalettes,
             settings->tileTheme,
             settings->roomNames,
+            settings->bossIcons,
+            settings->minibossIcons,
+            settings->saveIcons,
+            settings->speedBoosterSplit,
+            settings->statuesHallwayTiling,
+            settings->statuesHallwayAudio,
+            settings->mapTheme,
             settings->inputRomPath,
             settings->outputRomPath,
             settings->spoilerToken);
@@ -110,9 +132,10 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "doorLock=%d", &settings->doorLock) == 1) continue;
         if (sscanf(buffer, "mapRevealed=%d", &settings->mapRevealed) == 1) continue;
         if (sscanf(buffer, "mapStation=%d", &settings->mapStation) == 1) continue;
-        if (sscanf(buffer, "freeShinespark=%d", (int *)&settings->freeShinespark) == 1) continue;
-        if (sscanf(buffer, "ultraQuality=%d", (int *)&settings->ultraQuality) == 1) continue;
-        if (sscanf(buffer, "raceMode=%d", (int *)&settings->raceMode) == 1) continue;
+        int temp;
+        if (sscanf(buffer, "freeShinespark=%d", &temp) == 1) { settings->freeShinespark = (bool)temp; continue; }
+        if (sscanf(buffer, "ultraQuality=%d", &temp) == 1) { settings->ultraQuality = (bool)temp; continue; }
+        if (sscanf(buffer, "raceMode=%d", &temp) == 1) { settings->raceMode = (bool)temp; continue; }
         if (sscanf(buffer, "roomTheming=%d", &settings->roomTheming) == 1) continue;
         if (sscanf(buffer, "doorColors=%d", &settings->doorColors) == 1) continue;
         if (sscanf(buffer, "music=%d", &settings->music) == 1) continue;
@@ -123,24 +146,40 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "suit=%d", &settings->suit) == 1) continue;
         if (sscanf(buffer, "roomPalettes=%d", &settings->roomPalettes) == 1) continue;
         if (sscanf(buffer, "tileTheme=%d", &settings->tileTheme) == 1) continue;
-        if (sscanf(buffer, "roomNames=%d", &settings->roomNames) == 1) continue;
+        if (sscanf(buffer, "roomNames=%d", &temp) == 1) { settings->roomNames = (bool)temp; continue; }
+        if (sscanf(buffer, "bossIcons=%d", &temp) == 1) { settings->bossIcons = (bool)temp; continue; }
+        if (sscanf(buffer, "minibossIcons=%d", &temp) == 1) { settings->minibossIcons = (bool)temp; continue; }
+        if (sscanf(buffer, "saveIcons=%d", &temp) == 1) { settings->saveIcons = (bool)temp; continue; }
+        if (sscanf(buffer, "speedBoosterSplit=%d", &temp) == 1) { settings->speedBoosterSplit = (bool)temp; continue; }
+        if (sscanf(buffer, "statuesHallwayTiling=%d", &settings->statuesHallwayTiling) == 1) continue;
+        if (sscanf(buffer, "statuesHallwayAudio=%d", &settings->statuesHallwayAudio) == 1) continue;
+        if (sscanf(buffer, "mapTheme=%d", &settings->mapTheme) == 1) continue;
 
         // Handle strings with spaces
         if (strncmp(buffer, "inputRomPath=", 13) == 0) {
-            strncpy(settings->inputRomPath, buffer + 13, sizeof(settings->inputRomPath) - 1);
-            settings->inputRomPath[strcspn(settings->inputRomPath, "\n")] = '\0'; // Remove newline
+            copy_config_string(settings->inputRomPath,
+                            sizeof(settings->inputRomPath),
+                            buffer + 13);
+            settings->inputRomPath[strcspn(settings->inputRomPath, "\n")] = '\0';
             continue;
         }
+
         if (strncmp(buffer, "outputRomPath=", 14) == 0) {
-            strncpy(settings->outputRomPath, buffer + 14, sizeof(settings->outputRomPath) - 1);
-            settings->outputRomPath[strcspn(settings->outputRomPath, "\n")] = '\0'; // Remove newline
+            copy_config_string(settings->outputRomPath,
+                            sizeof(settings->outputRomPath),
+                            buffer + 14);
+            settings->outputRomPath[strcspn(settings->outputRomPath, "\n")] = '\0';
             continue;
         }
+
         if (strncmp(buffer, "spoilerToken=", 13) == 0) {
-            strncpy(settings->spoilerToken, buffer + 13, sizeof(settings->spoilerToken) - 1);
-            settings->spoilerToken[strcspn(settings->spoilerToken, "\n")] = '\0'; // Remove newline
+            copy_config_string(settings->spoilerToken,
+                            sizeof(settings->spoilerToken),
+                            buffer + 13);
+            settings->spoilerToken[strcspn(settings->spoilerToken, "\n")] = '\0';
             continue;
         }
+
     }
 
     fclose(file);

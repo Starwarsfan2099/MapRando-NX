@@ -22,6 +22,7 @@ extern const int suits_size;
 extern const char *tileTheme[];
 extern const int tile_size;
 extern const char *presets[];
+extern const char *statuesHallwayOptions[];
 extern const int presets_size;
 extern char outputPath[512];
 
@@ -57,6 +58,13 @@ struct mapRando {
     int roomPalettes;
     int tileTheme;
     bool roomNames;
+    bool bossIcons;
+    bool minibossIcons;
+    bool saveIcons;
+    bool speedBoosterSplit;
+    int statuesHallwayTiling;
+    int statuesHallwayAudio;
+    int mapTheme;
     char inputRomPath[256];
     char outputRomPath[256];
     char spoilerToken[256];

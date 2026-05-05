@@ -59,6 +59,7 @@ bool internetConnection = true;
 int main(int, char**)
 {
     socketInitializeDefault();
+    curl_global_init(CURL_GLOBAL_DEFAULT);
 
     nifmInitialize(NifmServiceType_User);
 
@@ -130,26 +131,24 @@ int main(int, char**)
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    io.Fonts->AddFontDefault();
     {
         PlFontData standard, extended;
-    static ImWchar extended_range[] = {0xe000, 0xe152};
-    if (R_SUCCEEDED(plGetSharedFontByType(&standard,     PlSharedFontType_Standard)) &&
-            R_SUCCEEDED(plGetSharedFontByType(&extended, PlSharedFontType_NintendoExt))) {
-        std::uint8_t *px;
-        int w, h, bpp;
-        ImFontConfig font_cfg;
+        static ImWchar extended_range[] = {0xe000, 0xe152, 0};
+        if (R_SUCCEEDED(plGetSharedFontByType(&standard,     PlSharedFontType_Standard)) &&
+                R_SUCCEEDED(plGetSharedFontByType(&extended, PlSharedFontType_NintendoExt))) {
+            std::uint8_t *px;
+            int w, h, bpp;
+            ImFontConfig font_cfg;
 
-        font_cfg.FontDataOwnedByAtlas = false;
-        io.Fonts->AddFontFromMemoryTTF(standard.address, standard.size, 20.0f, &font_cfg, io.Fonts->GetGlyphRangesDefault());
-        font_cfg.MergeMode            = true;
-        io.Fonts->AddFontFromMemoryTTF(extended.address, extended.size, 20.0f, &font_cfg, extended_range);
+            font_cfg.FontDataOwnedByAtlas = false;
+            io.Fonts->AddFontFromMemoryTTF(standard.address, standard.size, 20.0f, &font_cfg, io.Fonts->GetGlyphRangesDefault());
+            font_cfg.MergeMode            = true;
+            io.Fonts->AddFontFromMemoryTTF(extended.address, extended.size, 20.0f, &font_cfg, extended_range);
 
-        io.Fonts->GetTexDataAsAlpha8(&px, &w, &h, &bpp);
-        io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
-        io.Fonts->Build();
-    }
-
+            io.Fonts->GetTexDataAsAlpha8(&px, &w, &h, &bpp);
+            io.Fonts->Flags |= ImFontAtlasFlags_NoPowerOfTwoHeight;
+            io.Fonts->Build();
+        }
     }
     TRACE("Done fonts");
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -279,9 +278,10 @@ int main(int, char**)
         ImGui::RadioButton("Full", &mapRandoSettings.eTankMode, 2);
 
         ImGui::Text("Area Assignment:"); ImGui::SameLine();
-        ImGui::RadioButton("Ordered", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
-        ImGui::RadioButton("Standard##2", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
-        ImGui::RadioButton("Random##4", &mapRandoSettings.areaAssignment, 2);
+        ImGui::RadioButton("Standard##2", &mapRandoSettings.areaAssignment, 0); ImGui::SameLine();
+        ImGui::RadioButton("Size", &mapRandoSettings.areaAssignment, 1); ImGui::SameLine();
+        ImGui::RadioButton("Depth", &mapRandoSettings.areaAssignment, 2); ImGui::SameLine();
+        ImGui::RadioButton("Random##4", &mapRandoSettings.areaAssignment, 3);
 
         ImGui::Text("Item Dots After Collection:"); ImGui::SameLine();
         ImGui::RadioButton("Fade", &mapRandoSettings.dotsFade, 0); ImGui::SameLine();
@@ -306,8 +306,13 @@ int main(int, char**)
 
         ImGui::Checkbox("Energy free shinespark", &mapRandoSettings.freeShinespark); ImGui::SameLine();
         ImGui::Checkbox("Ultra low quality of life", &mapRandoSettings.ultraQuality); ImGui::SameLine();
-        ImGui::Checkbox("Race mode", &mapRandoSettings.raceMode);ImGui::SameLine();
-        ImGui::Checkbox("Room names", &mapRandoSettings.roomNames);
+        ImGui::Checkbox("Race mode", &mapRandoSettings.raceMode); 
+
+        ImGui::Checkbox("Room names", &mapRandoSettings.roomNames);ImGui::SameLine();
+        ImGui::Checkbox("Boss icons", &mapRandoSettings.bossIcons);ImGui::SameLine();
+        ImGui::Checkbox("Miniboss icons", &mapRandoSettings.minibossIcons);ImGui::SameLine();
+        ImGui::Checkbox("Save icons", &mapRandoSettings.saveIcons); ImGui::SameLine();
+        ImGui::Checkbox("Speed booster split", &mapRandoSettings.speedBoosterSplit);
 
         ImGui::Separator();
 
@@ -348,6 +353,20 @@ int main(int, char**)
         ImGui::RadioButton("Vanilla##8", &mapRandoSettings.lowEnergyBeeping, 0); ImGui::SameLine();
         ImGui::RadioButton("Disabled##3", &mapRandoSettings.lowEnergyBeeping, 1);
 
+        ImGui::Text("Statues Hallway tiling:"); ImGui::SameLine();
+        ImGui::RadioButton("Disabled##4", &mapRandoSettings.statuesHallwayTiling, 0); ImGui::SameLine();
+        ImGui::RadioButton("Default##2", &mapRandoSettings.statuesHallwayTiling, 1); ImGui::SameLine();
+        ImGui::RadioButton("Enabled##2", &mapRandoSettings.statuesHallwayTiling, 2);
+
+        ImGui::Text("Statues Hallway Audio:"); ImGui::SameLine();
+        ImGui::RadioButton("Disabled##5", &mapRandoSettings.statuesHallwayAudio, 0); ImGui::SameLine();
+        ImGui::RadioButton("Enabled##3", &mapRandoSettings.statuesHallwayAudio, 1); ImGui::SameLine();
+        ImGui::RadioButton("Louder", &mapRandoSettings.statuesHallwayAudio, 2);
+
+        ImGui::Text("Map Theme:"); ImGui::SameLine();
+        ImGui::RadioButton("Dark", &mapRandoSettings.mapTheme, 0); ImGui::SameLine();
+        ImGui::RadioButton("Light", &mapRandoSettings.mapTheme, 1);
+        
         //Tile themes
         ImGui::Text("Tile theme:");
         if (ImGui::BeginCombo("##tileTheme", tileTheme[mapRandoSettings.tileTheme])) {
@@ -482,6 +501,10 @@ int main(int, char**)
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();
+    
+    nifmExit();
+    plExit();
+    curl_global_cleanup();
     socketExit();
 
     return 0;

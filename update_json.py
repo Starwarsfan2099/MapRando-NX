@@ -9,14 +9,14 @@ settingsFileName = Path("source/settings.c")
 maprandoFileName = Path("source/map_rando.c")
 sprites = ""
 presets = []
-otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":\"Standard\",\"item_dot_change\":\"Fade\",\"transition_letters\":true,\"door_locks_size\":\"Large\",\"maps_revealed\":\"No\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"race_mode\":false,\"random_seed\":null},\"debug\":false}"
+otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":{\"preset\":\"Standard\",\"base_order\":\"Size\",\"ship_in_crateria\":true,\"mother_brain_in_tourian\":true},\"door_locks_size\":\"Large\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"disable_spikesuit\":false,\"disable_bluesuit\":false,\"enable_major_glitches\":false,\"speed_booster\":\"Vanilla\",\"race_mode\":false,\"random_seed\":null},\"debug\":false}"
 
 response = requests.get(generateURL)
 if response.status_code == 200:
     source = response.text.splitlines()
 
     for line in source:
-        if "<a class=\"nav-link m-1\" href=\"/\">" in line.strip():
+        if "<a class=\"nav-link m-1\"" in line.strip():
             print("Version:" + line.split(">")[1].split("<")[0])
 
     print("Generating settings.c...")
@@ -35,7 +35,7 @@ if response.status_code == 200:
     print("Adding presets...")
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
-        origFile[43] = "const char *presets[] = {\"None\",\"" + "\",\"".join(presets) + "\"};\n"
+        origFile[45] = "const char *presets[] = {\"None\",\"" + "\",\"".join(presets) + "\"};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)
@@ -72,7 +72,7 @@ if response.status_code == 200:
     print("Modifying map_rando.c...")
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
-        origFile[39] = "const char *suits[] = {" + sprites[:-1] + "};\n"
+        origFile[41] = "const char *suits[] = {" + sprites[:-1] + "};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)
@@ -97,7 +97,7 @@ if response.status_code == 200:
     print("Modifying map_rando.c again...")
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
-        origFile[42] = "const char *tileTheme[] = {" + tiles[:-1] + "};\n"
+        origFile[44] = "const char *tileTheme[] = {" + tiles[:-1] + "};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)
