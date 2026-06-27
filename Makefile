@@ -45,7 +45,7 @@ INCLUDES	:=	include
 #ROMFS	:=	romfs
 APP_TITLE	:= 	MapRando-NX
 APP_AUTHOR 	:= 	Starwarsfan2099
-APP_VERSION := 	v122
+APP_VERSION := 	v123
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -55,7 +55,7 @@ ARCH	:=	-march=armv8-a+crc+crypto -mtune=cortex-a57 -mtp=soft -fPIE
 CFLAGS	:=	-g -Wall -O2 -ffunction-sections \
 			$(ARCH) $(DEFINES)
 
-CFLAGS	+=	$(INCLUDE) -D__SWITCH__
+CFLAGS	+=	$(INCLUDE) -D__SWITCH__ -DDEBUG
 
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions
 
