@@ -25,6 +25,18 @@ extern const char *presets[];
 extern const char *statuesHallwayOptions[];
 extern const int presets_size;
 extern char outputPath[512];
+extern volatile int mapRandoStage;
+extern volatile double mapRandoProgress;
+
+// Display statuses
+enum {
+    MAP_RANDO_STAGE_IDLE = 0,
+    MAP_RANDO_STAGE_SENDING_SETTINGS,
+    MAP_RANDO_STAGE_CUSTOMIZING,
+    MAP_RANDO_STAGE_DOWNLOADING,
+    MAP_RANDO_STAGE_COMPLETE,
+    MAP_RANDO_STAGE_FAILED
+};
 
 // Settings struct
 struct mapRando {

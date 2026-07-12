@@ -48,6 +48,8 @@ const char *mapThemes[] = {"Dark", "Light"};
 const int tile_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
 const int presets_size = sizeof(presets) / sizeof(presets[0]);
 char outputPath[512];
+volatile int mapRandoStage = MAP_RANDO_STAGE_IDLE;
+volatile double mapRandoProgress = 0.0;
 const char *userAgent = "Switch Homebrew - MapRando-NX";
 
 // Callback function for handling response data
@@ -127,6 +129,19 @@ char *send_request_1(const char *file_path, const char *spoiler_token, const cha
     curl_formfree(formpost);
 
     return chunk.response;
+}
+
+// Callbacks for status and progress bar
+size_t DownloadWriteCallback(void *ptr, size_t size, size_t nmemb, void *stream) {
+    mapRandoStage = MAP_RANDO_STAGE_DOWNLOADING;
+    return fwrite(ptr, size, nmemb, (FILE *)stream);
+}
+
+int ProgressCallback(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow) {
+    if (dltotal > 0) {
+        mapRandoProgress = (double)dlnow / (double)dltotal;
+    }
+    return 0;
 }
 
 // Function to send the second request
@@ -215,7 +230,9 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_easy_setopt(curl, CURLOPT_URL, seedUrl);
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, output_file);
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, DownloadWriteCallback);
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, ProgressCallback);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
     //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // Perform the request
@@ -289,6 +306,8 @@ char *extract_seed_url(const char *response) {
 }
 
 int generate_map_rando(struct mapRando mapRandoSettings) {
+    mapRandoStage = MAP_RANDO_STAGE_SENDING_SETTINGS;
+    mapRandoProgress = 0.0;
     const char* speedBoosterSplit = mapRandoSettings.speedBoosterSplit ? "Split" : "Vanilla";
     TRACE("Generating...");
 
@@ -437,6 +456,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
     }
 
     // Send the second request
+    mapRandoStage = MAP_RANDO_STAGE_CUSTOMIZING;
     int res2 = send_request_2(customize_url, mapRandoSettings.inputRomPath, outputPath, mapRandoSettings);
     free(seedUrl);
 

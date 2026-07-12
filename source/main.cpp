@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <string>
 #include <thread> // For std::thread
+#include <atomic>
 
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
@@ -50,11 +51,9 @@ const int skillLevelSize = sizeof(skillLevelLabels) / sizeof(skillLevelLabels[0]
 
 bool showPopup = false;
 bool showSavePopup = false;
-bool loadingInProgress = false;
-bool loadingDone = false;
-int loadingFrames = 0;
-int success = 0;
+std::atomic<int> success(0);
 bool internetConnection = true;
+std::thread randoThread;
 
 int main(int, char**)
 {
@@ -395,9 +394,24 @@ int main(int, char**)
         ImGui::SetCursorPosY(40);
         if (ImGui::Button("Generate Rando", ImVec2(200, 50))) {
             showPopup = true;
-            loadingInProgress = true;
-            loadingDone = false;
-            loadingFrames = 0;
+            if (internetConnection) {
+                mapRandoStage = MAP_RANDO_STAGE_SENDING_SETTINGS;
+                success = -1;
+                if (randoThread.joinable()) {
+                    randoThread.join();
+                }
+
+                // Use a thread for the display window so we can update the text
+                randoThread = std::thread([mapRandoSettings]() {
+                    int res = generate_map_rando(mapRandoSettings);
+                    success = res;
+                    if (res == 0) {
+                        mapRandoStage = MAP_RANDO_STAGE_COMPLETE;
+                    } else {
+                        mapRandoStage = MAP_RANDO_STAGE_FAILED;
+                    }
+                });
+            }
         }
 
         // Save settings button
@@ -440,7 +454,7 @@ int main(int, char**)
         if (showPopup) {
             ImGui::OpenPopup("Generating Map Rando");
             ImVec2 screen_size = ImGui::GetIO().DisplaySize;
-            ImVec2 window_size = ImVec2(800, 200);
+            ImVec2 window_size = ImVec2(800, 22 0);
             ImVec2 window_pos = ImVec2((screen_size.x - window_size.x) * 0.5f, 
                                     (screen_size.y - window_size.y) * 0.5f);
 
@@ -449,32 +463,87 @@ int main(int, char**)
             ImGui::SetNextWindowSize(window_size);
             if (ImGui::BeginPopupModal("Generating Map Rando", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                 ImGui::SetWindowFontScale(1.5f);
-                if (loadingInProgress) {
-                    if (internetConnection) {
-                        ImGui::Text("Generating...");
-                        loadingFrames++;
-                        if (loadingFrames > 3) {
-                            loadingInProgress = false;
-                            loadingDone = true;
-                        }
-                    } else {
-                        ImGui::Text("No internet connection.");
+                std::string line1 = "";
+                std::string line2 = "";
+                bool showCloseButton = false;
+
+                if (!internetConnection) {
+                    line1 = "No internet connection.";
+                    showCloseButton = true;
+                } else if (mapRandoStage >= MAP_RANDO_STAGE_SENDING_SETTINGS && mapRandoStage <= MAP_RANDO_STAGE_DOWNLOADING) {
+                    int dotsCount = (int)(ImGui::GetTime() * 2) % 4;
+                    std::string dots = "";
+                    for (int i = 0; i < dotsCount; i++) dots += ".";
+
+                    // Status messages
+                    if (mapRandoStage == MAP_RANDO_STAGE_SENDING_SETTINGS) {
+                        line1 = "Sending settings" + dots;
+                    } else if (mapRandoStage == MAP_RANDO_STAGE_CUSTOMIZING) {
+                        line1 = "Customizing" + dots;
+                    } else if (mapRandoStage == MAP_RANDO_STAGE_DOWNLOADING) {
+                        line1 = "Downloading" + dots;
                     }
-                } else if (loadingDone) {
-                    success = generate_map_rando(mapRandoSettings);
-                    loadingDone = false;
                 } else {
-                    if (success == 0){
-                        ImGui::Text("Complete! Saved to:");
-                        ImGui::Text(outputPath); 
+                    if (mapRandoStage == MAP_RANDO_STAGE_COMPLETE && success == 0) {
+                        line1 = "Complete! Saved to:";
+                        line2 = outputPath; 
                     } else {
-                        ImGui::Text("Generating Failed.");
+                        line1 = "Generating Failed.";
                     }
-                    if (ImGui::Button("Close")) {
+                    showCloseButton = true;
+                }
+
+                if (!line1.empty()) {
+                    float textWidth = ImGui::CalcTextSize(line1.c_str()).x;
+                    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - textWidth) * 0.5f);
+                    ImGui::TextUnformatted(line1.c_str());
+                }
+
+                if (!line2.empty()) {
+                    float textWidth = ImGui::CalcTextSize(line2.c_str()).x;
+                    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - textWidth) * 0.5f);
+                    ImGui::TextUnformatted(line2.c_str());
+                }
+
+                // Add the progress bar
+                if (internetConnection) {
+                    float barProgress = 0.0f;
+                    bool showBar = false;
+
+                    if (mapRandoStage == MAP_RANDO_STAGE_SENDING_SETTINGS) {
+                        barProgress = 0.1f;
+                        showBar = true;
+                    } else if (mapRandoStage == MAP_RANDO_STAGE_CUSTOMIZING) {
+                        barProgress = 0.4f;
+                        showBar = true;
+                    } else if (mapRandoStage == MAP_RANDO_STAGE_DOWNLOADING) {
+                        barProgress = 0.4f + (float)mapRandoProgress * 0.55f;
+                        showBar = true;
+                    } else if (mapRandoStage == MAP_RANDO_STAGE_COMPLETE && success == 0) {
+                        barProgress = 1.0f;
+                        showBar = true;
+                    }
+
+                    if (showBar) {
+                        ImGui::Spacing();
+                        ImGui::ProgressBar(barProgress, ImVec2(-1.0f, 30.0f));
+                    }
+                }
+
+                // Render centered Close button if finished
+                if (showCloseButton) {
+                    ImGui::Spacing();
+                    float buttonWidth = 120.0f;
+                    ImGui::SetCursorPosX((ImGui::GetWindowSize().x - buttonWidth) * 0.5f);
+                    if (ImGui::Button("Close", ImVec2(buttonWidth, 0.0f))) {
                         showPopup = false;
+                        if (randoThread.joinable()) {
+                            randoThread.join();
+                        }
                         ImGui::CloseCurrentPopup();
                     }
                 }
+
                 ImGui::EndPopup();
             }
         }
@@ -495,7 +564,10 @@ int main(int, char**)
             break;
     }
 
-    // Cleanup
+    // Cleanup threads
+    if (randoThread.joinable()) {
+        randoThread.join();
+    }
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
