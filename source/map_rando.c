@@ -41,11 +41,13 @@ const char *statuesHallwayOptions[] = {"Disabled", "Default", "Enabled"};
 const char *statuesHallwayAudioOptions[] = {"Disabled", "Enabled", "Louder"};
 const char *suits[] = {"samus_vanilla","metroid_1_suit","samus_zero-mission","samus_returns","samus_fusion_typea_green","prime_series_suit","ped_suit","samus_dread","dread_samus","metroid_suit","ascent","ancient_chozo_pg","super_duper","hack_opposition","samus_aroace","samus_aroace_2","samus_enby","samus_trans","samus_agender","dark_samus","dark_samus_2","dark_samus_reanimated","samus_maid","santamus","samus_blue","bastion","samus_clocktoberfest","samus_greyscale","samus_outline","alcoon","alucard_sotn","arcana","bailey","bart_simpson","bob","brad_fang","bruno","buffed_kirby","buffed_eggplant","buffed_pug","cacodemon","captain_novolin","ceroba_ketsukane","chairdeep","charizard","charlotte_aran","crest","crewmate","cuphead","cursor","diddy_kong","earthworm_jim","elista","fedtrooper","fight","goku_child","green_mm","infee_nitee","inkling-girl","junko","katt_aran","kiara","kiara_idol","king_of_pop","kirby","kirby_yarn","knuckles","link_2_the_past","link_oot","link_tall","luigi_mansion","lyn","maddie_and_baddie","marga","maria_pollo","maria_renard","mario_8bit","mario_8bit_modern","mario_dreamteam","mario_smw","master_hand","maxim_kischine","megamanx","megamanx_bearded","metroid","modul","moonclif","officer_donut","onefourty","plissken","protogen_laso","pyronett","pyronett_a","richter_belmont","alien_3_ripley","ronald_mcdonald","samus_combatarmor","sans","shantae","shaktool","shaktool-jr","snes_controller","sonic","advance_sonic","space_pirate","spider_man","spongebob","sprite_can","super_controid_pg","tails","tetris","terrifier","thomcrow_corbin","V1","wario","yoshi","zero_suit_samus","samus_backwards","samus_upsidedown","samus_180-degree","samus_mini","samus_left-leg","samus_cannon","samus_invisible","hitboxhelper2","magic_pants"};
 const int suits_size = sizeof(suits) / sizeof(suits[0]);
-const char *roomPalettes[] = {"vanilla", "area_themed"};
+const char *roomPalettes[] = {"vanilla","area-themed","area-shuffled","scrambled","crateria","brinstar","norfair","wrecked-ship","maridia","tourian"};
 const char *tileTheme[] = {"none","area_themed","area_shuffled","scrambled","OuterCrateria","InnerCrateria","BlueBrinstar","GreenBrinstar","PinkBrinstar","RedBrinstar","WarehouseBrinstar","UpperNorfair","LowerNorfair","WreckedShip","WestMaridia","YellowMaridia","Bedrock","MechaTourian","MetroidHabitat","StatuesHallway","Outline","Invisible"};
 const char *presets[] = {"None","Default","Community Race Season 5","Mentor Tournament","Summer Series Expert Challenge"};
 const char *mapThemes[] = {"Dark", "Light"};
+const char *saveStateModes[] = {"No", "Limited", "Unlimited"};
 const int tile_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
+const int pallette_size = sizeof(tileTheme) / sizeof(tileTheme[0]);
 const int presets_size = sizeof(presets) / sizeof(presets[0]);
 char outputPath[512];
 volatile int mapRandoStage = MAP_RANDO_STAGE_IDLE;
@@ -75,6 +77,7 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
 char *send_request_1(const char *file_path, const char *spoiler_token, const char *settings) {
     CURL *curl;
     CURLcode res;
+    long response_code;
     struct Memory chunk = {NULL, 0};
     struct curl_httppost *formpost = NULL;
     struct curl_httppost *lastptr = NULL;
@@ -112,15 +115,22 @@ char *send_request_1(const char *file_path, const char *spoiler_token, const cha
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
+    curl_easy_setopt(curl, CURLOPT_FAILONERROR, 0L);
 
     // Perform the request
     res = curl_easy_perform(curl);
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
 
     if (res != CURLE_OK) {
         TRACE("curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
         free(chunk.response);
         curl_easy_cleanup(curl);
         curl_formfree(formpost);
+        return NULL;
+    }
+
+    if (response_code != 200) {
+        TRACE("Server returned HTTP %ld\n", response_code);
         return NULL;
     }
 
@@ -225,6 +235,14 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "transition_letters", CURLFORM_COPYCONTENTS, transitionLetters, CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "item_dot_change", CURLFORM_COPYCONTENTS, dotsFade[mapRandoSettings.dotsFade], CURLFORM_END);
     curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "map_theme", CURLFORM_COPYCONTENTS, mapThemes[mapRandoSettings.mapTheme], CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_state_x", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_state_l", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_state_r", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "save_state_select", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "load_state_y", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "load_state_l", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "load_state_r", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
+    curl_formadd(&formpost, &lastptr, CURLFORM_COPYNAME, "load_state_select", CURLFORM_COPYCONTENTS, "on", CURLFORM_END);
 
     // Set CURL options
     curl_easy_setopt(curl, CURLOPT_URL, seedUrl);
@@ -233,7 +251,7 @@ int send_request_2(const char *seedUrl, const char *file_path, const char *outpu
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, DownloadWriteCallback);
     curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, ProgressCallback);
     curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-    //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
     // Perform the request
     res = curl_easy_perform(curl);
@@ -381,6 +399,7 @@ int generate_map_rando(struct mapRando mapRandoSettings) {
         json_object_object_add(other_settings_obj, "ultra_low_qol", json_object_new_boolean(mapRandoSettings.ultraQuality));
         json_object_object_add(other_settings_obj, "race_mode", json_object_new_boolean(mapRandoSettings.raceMode));
         json_object_object_add(other_settings_obj, "speed_booster", json_object_new_string(speedBoosterSplit));
+        json_object_object_add(other_settings_obj, "savestate", json_object_new_string(saveStateModes[mapRandoSettings.saveStatesEnabled]));
 
         main_obj = json_object_new_object();
         json_object_object_add(main_obj, "version", json_object_new_int(version));

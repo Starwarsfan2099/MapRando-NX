@@ -20,7 +20,9 @@ extern const int version;
 extern const char *suits[];
 extern const int suits_size;
 extern const char *tileTheme[];
+extern const char *roomPalettes[];
 extern const int tile_size;
+extern const int pallette_size;
 extern const char *presets[];
 extern const char *statuesHallwayOptions[];
 extern const int presets_size;
@@ -74,6 +76,7 @@ struct mapRando {
     bool minibossIcons;
     bool saveIcons;
     bool speedBoosterSplit;
+    int saveStatesEnabled;
     int statuesHallwayTiling;
     int statuesHallwayAudio;
     int mapTheme;

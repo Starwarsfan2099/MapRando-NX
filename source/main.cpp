@@ -313,6 +313,12 @@ int main(int, char**)
         ImGui::Checkbox("Save icons", &mapRandoSettings.saveIcons); ImGui::SameLine();
         ImGui::Checkbox("Speed booster split", &mapRandoSettings.speedBoosterSplit);
 
+        ImGui::Text("Savestates Enabled:"); ImGui::SameLine();
+        ImGui::RadioButton("No##3", &mapRandoSettings.saveStatesEnabled, 0); ImGui::SameLine();
+        ImGui::RadioButton("Limited", &mapRandoSettings.saveStatesEnabled, 1); ImGui::SameLine();
+        ImGui::RadioButton("Unlimited", &mapRandoSettings.saveStatesEnabled, 2);
+
+
         ImGui::Separator();
 
         // Suits
@@ -326,10 +332,16 @@ int main(int, char**)
             ImGui::EndCombo();
         }
 
-        ImGui::Text("Room theming:"); ImGui::SameLine();
-        ImGui::RadioButton("Vanilla##4", &mapRandoSettings.roomTheming, 0); ImGui::SameLine();
-        ImGui::RadioButton("Area Palettes", &mapRandoSettings.roomTheming, 1); ImGui::SameLine();
-        ImGui::RadioButton("Area Tiling", &mapRandoSettings.roomTheming, 2);
+        //Tile themes
+        ImGui::Text("Room theme:");
+        if (ImGui::BeginCombo("##roomTheme", tileTheme[mapRandoSettings.roomTheming])) {
+            for (int i = 0; i < pallette_size; i++) {
+                if (ImGui::Selectable(roomPalettes[i], mapRandoSettings.roomTheming == i)) {
+                    mapRandoSettings.roomTheming = i;
+                }
+            }
+            ImGui::EndCombo();
+        }
 
         ImGui::Text("Door colors:"); ImGui::SameLine();
         ImGui::RadioButton("Vanilla##5", &mapRandoSettings.doorColors, 0); ImGui::SameLine();
@@ -454,7 +466,7 @@ int main(int, char**)
         if (showPopup) {
             ImGui::OpenPopup("Generating Map Rando");
             ImVec2 screen_size = ImGui::GetIO().DisplaySize;
-            ImVec2 window_size = ImVec2(800, 22 0);
+            ImVec2 window_size = ImVec2(800, 220);
             ImVec2 window_pos = ImVec2((screen_size.x - window_size.x) * 0.5f, 
                                     (screen_size.y - window_size.y) * 0.5f);
 
