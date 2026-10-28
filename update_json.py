@@ -9,7 +9,7 @@ settingsFileName = Path("source/settings.c")
 maprandoFileName = Path("source/map_rando.c")
 sprites = ""
 presets = []
-otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":{\"preset\":\"Standard\",\"base_order\":\"Size\",\"ship_in_crateria\":true,\"mother_brain_in_tourian\":true},\"door_locks_size\":\"Large\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"disable_spikesuit\":false,\"disable_bluesuit\":false,\"enable_major_glitches\":false,\"speed_booster\":\"Vanilla\",\"race_mode\":false,\"random_seed\":null},\"debug\":false}"
+otherSettings = "{\"wall_jump\":\"Vanilla\",\"area_assignment\":{\"preset\":\"Standard\",\"base_order\":\"Size\",\"ship_in_crateria\":true,\"mother_brain_in_tourian\":true},\"door_locks_size\":\"Large\",\"map_station_reveal\":\"Full\",\"energy_free_shinesparks\":false,\"ultra_low_qol\":false,\"disable_spikesuit\":false,\"disable_bluesuit\":false,\"enable_major_glitches\":false,\"speed_booster\":\"Vanilla\",\"race_mode\":false,\"savestate\":\"No\",\"random_seed\":null},\"debug\":false}"
 
 response = requests.get(generateURL)
 if response.status_code == 200:
@@ -87,7 +87,7 @@ if response.status_code == 200:
             j = i
             break
         i += 1
-    while (j < i + 10):
+    while("</select>" not in source[j]):
         tilesSource = tilesSource + source[j]
         j+=1
     for term in tilesSource.split(" "):
@@ -98,6 +98,31 @@ if response.status_code == 200:
     with open(maprandoFileName,'r') as inputFile:
         origFile = inputFile.readlines()
         origFile[44] = "const char *tileTheme[] = {" + tiles[:-1] + "};\n"
+
+        with open(maprandoFileName,'w') as outputFile:
+            outputFile.writelines(origFile)
+
+    print("Getting room palettes...")
+    pallettesSource = ""
+    pallettes = ""
+    j = 0
+    i = 0
+    for line in source:
+        if "<select id=\"roomPalettes\" name=\"room_palettes\" class=\"form-select\">" in line:
+            j = i
+            break
+        i += 1
+    while("</select>" not in source[j]):
+        pallettesSource = pallettesSource + source[j]
+        j+=1
+    for term in pallettesSource.split(" "):
+            if "value=" in term:
+                pallettes = pallettes + term.split(">")[0].replace("value=", "") + ","
+
+    print("Modifying map_rando.c once more...")
+    with open(maprandoFileName,'r') as inputFile:
+        origFile = inputFile.readlines()
+        origFile[43] = "const char *roomPalettes[] = {" + pallettes[:-1] + "};\n"
 
         with open(maprandoFileName,'w') as outputFile:
             outputFile.writelines(origFile)

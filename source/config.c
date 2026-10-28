@@ -56,6 +56,7 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             "minibossIcons=%d\n"
             "saveIcons=%d\n"
             "speedBoosterSplit=%d\n"
+            "saveStatesEnabled=%d\n"
             "statuesHallwayTiling=%d\n"
             "statuesHallwayAudio=%d\n"
             "mapTheme=%d\n"
@@ -96,6 +97,7 @@ int saveSettingsToFile(struct mapRando *settings, const char *filename) {
             settings->minibossIcons,
             settings->saveIcons,
             settings->speedBoosterSplit,
+            settings->saveStatesEnabled,
             settings->statuesHallwayTiling,
             settings->statuesHallwayAudio,
             settings->mapTheme,
@@ -151,6 +153,7 @@ int loadSettingsFromFile(struct mapRando *settings, const char *filename) {
         if (sscanf(buffer, "minibossIcons=%d", &temp) == 1) { settings->minibossIcons = (bool)temp; continue; }
         if (sscanf(buffer, "saveIcons=%d", &temp) == 1) { settings->saveIcons = (bool)temp; continue; }
         if (sscanf(buffer, "speedBoosterSplit=%d", &temp) == 1) { settings->speedBoosterSplit = (bool)temp; continue; }
+        if (sscanf(buffer, "saveStatesEnabled=%d", &settings->saveStatesEnabled) == 1) continue;
         if (sscanf(buffer, "statuesHallwayTiling=%d", &settings->statuesHallwayTiling) == 1) continue;
         if (sscanf(buffer, "statuesHallwayAudio=%d", &settings->statuesHallwayAudio) == 1) continue;
         if (sscanf(buffer, "mapTheme=%d", &settings->mapTheme) == 1) continue;

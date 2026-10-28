@@ -45,7 +45,7 @@ INCLUDES	:=	include
 #ROMFS	:=	romfs
 APP_TITLE	:= 	MapRando-NX
 APP_AUTHOR 	:= 	Starwarsfan2099
-APP_VERSION := 	v122
+APP_VERSION := 	v123
 
 #---------------------------------------------------------------------------------
 # options for code generation
